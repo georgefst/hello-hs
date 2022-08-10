@@ -7,6 +7,11 @@
   outputs = { self, nixpkgs, flake-utils, haskellNix }:
     flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-darwin" ] (system:
       let
+        crossPlatforms = p: [
+          # Provides `nix build .#aarch64-unknown-linux-gnu:hello-hs:exe:hello-hs`.
+          # And `aarch64-unknown-linux-gnu-cabal` etc. in the shell.
+          p.aarch64-multiplatform
+        ];
         overlays = [
           haskellNix.overlay
           (final: prev: {
@@ -14,16 +19,12 @@
               final.haskell-nix.project' {
                 src = ./.;
                 compiler-nix-name = "ghc924";
-                # This adds `aarch64-unknown-linux-gnu-cabal` to the shell.
-                shell.crossPlatforms = p: [ p.aarch64-multiplatform ];
+                shell = { inherit crossPlatforms; };
               };
           })
         ];
         pkgs = import nixpkgs { inherit system overlays; inherit (haskellNix) config; };
-        flake = pkgs.helloProject.flake {
-          # This adds support for `nix build .#aarch64-unknown-linux-gnu:hello-hs:exe:hello-hs`
-          crossPlatforms = p: [ p.aarch64-multiplatform ];
-        };
+        flake = pkgs.helloProject.flake { inherit crossPlatforms; };
       in
       flake // {
         defaultPackage = flake.packages."hello-hs:exe:hello-hs";
