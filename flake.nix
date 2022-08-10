@@ -26,7 +26,5 @@
         pkgs = import nixpkgs { inherit system overlays; inherit (haskellNix) config; };
         flake = pkgs.helloProject.flake { inherit crossPlatforms; };
       in
-      flake // {
-        defaultPackage = flake.packages."hello-hs:exe:hello-hs";
-      });
+      flake);
 }
