@@ -14,11 +14,16 @@
               final.haskell-nix.project' {
                 src = ./.;
                 compiler-nix-name = "ghc924";
+                # This adds `aarch64-unknown-linux-gnu-cabal` to the shell.
+                shell.crossPlatforms = p: [ p.aarch64-multiplatform ];
               };
           })
         ];
         pkgs = import nixpkgs { inherit system overlays; inherit (haskellNix) config; };
-        flake = pkgs.helloProject.flake { };
+        flake = pkgs.helloProject.flake {
+          # This adds support for `nix build .#aarch64-unknown-linux-gnu:hello-hs:exe:hello-hs`
+          crossPlatforms = p: [ p.aarch64-multiplatform ];
+        };
       in
       flake // {
         defaultPackage = flake.packages."hello-hs:exe:hello-hs";
