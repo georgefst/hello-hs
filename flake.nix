@@ -15,7 +15,7 @@
         overlays = [
           haskellNix.overlay
           (final: prev: {
-            helloProject =
+            myHaskellProject =
               final.haskell-nix.project' {
                 src = ./.;
                 compiler-nix-name = "ghc924";
@@ -25,5 +25,5 @@
         ];
         pkgs = import nixpkgs { inherit system overlays; inherit (haskellNix) config; };
       in
-      pkgs.helloProject.flake { inherit crossPlatforms; });
+      pkgs.myHaskellProject.flake { inherit crossPlatforms; });
 }
