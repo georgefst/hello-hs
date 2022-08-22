@@ -1,4 +1,8 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Main where
 
+import Data.FileEmbed (embedFile)
+
 main :: IO ()
-main = putStrLn "Hello, Haskell!"
+main = print $(embedFile "embed")
