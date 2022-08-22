@@ -10,7 +10,7 @@
         crossPlatforms = p: [
           # Provides `nix build .#aarch64-unknown-linux-gnu:hello-hs:exe:hello-hs`.
           # And `aarch64-unknown-linux-gnu-cabal` etc. in the shell.
-          p.aarch64-multiplatform
+          p.musl64
         ];
         overlays = [
           haskellNix.overlay
@@ -21,6 +21,11 @@
                 compiler-nix-name = "ghc924";
                 shell = { inherit crossPlatforms; };
               };
+          })
+
+          haskellNix.overlay
+          (final: prev: prev.lib.optionalAttrs prev.stdenv.hostPlatform.isMusl {
+            libevdev = prev.libevdev.overrideAttrs (_: { dontDisableStatic = true; });
           })
         ];
         pkgs = import nixpkgs { inherit system overlays; inherit (haskellNix) config; };

@@ -10,3 +10,5 @@ executable hello-hs
     build-depends:    base >=4.14
     hs-source-dirs:   app
     default-language: Haskell2010
+    build-depends:
+        evdev,
