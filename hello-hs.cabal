@@ -8,6 +8,9 @@ maintainer: georgefsthomas@gmail.com
 executable hello-hs
     main-is: Main.hs
     hs-source-dirs: app
+    other-modules:
+        Instance
+        Lib
     default-language: GHC2021
     ghc-options:
         -Wall
