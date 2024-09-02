@@ -1,0 +1,27 @@
+packages:
+    .
+
+allow-newer:
+    zlib:base
+
+source-repository-package
+    type: git
+    location: https://github.com/haskell/zlib/
+    -- 0.7.0.0,
+    -- tag: 90c7af59ed760a78870d70f14d2b5dbe0906b4a5
+    -- 0.6.3.0
+    -- tag: 0b71a311327e92a90bb658618896f34bfce17601
+    -- master
+    subdir: zlib
+    tag: 6a09eeb6fdba608114f0b78dabb25415402fcd38
+
+constraints:
+    -- this fixes it as well! the commit which made this on-by-default is the one that breaks stuff
+    -- so, breakage requires pacman GHC installed, Zlib using pkg-conf, and non-suffixed Cabal store dir
+    -- so `pkgconfig-depends: zlib` is somehow causing `usr/include` to be added to GCC invocation
+    -- which is unsurprising, looking at `zlib.pc` (or indeed others, like Wxc)
+    -- not sure what the cleanest approach is for isolation, or why store suffixing matters
+    -- zlib -pkg-config,
+    -- zlib -non-blocking-ffi,
+    -- zlib +bundled-c-zlib,
+    zlib == 0.7.1.0,

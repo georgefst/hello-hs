@@ -19,4 +19,6 @@ executable hello-hs
 
         -- bad
         -- zlib == 0.7.0.0,
-        zlib == 0.7.1.0,
+        -- zlib == 0.7.1.0,
+
+        zlib,
