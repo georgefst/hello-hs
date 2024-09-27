@@ -13,3 +13,4 @@ executable hello-hs
         -Wall
     build-depends:
         base >=4.14,
+        streamly-core,
