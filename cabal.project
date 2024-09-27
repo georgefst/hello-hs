@@ -2,7 +2,7 @@ packages: .
 
 source-repository-package
     type: git
-    location: https://github.com/composewell/streamly
-    tag: 5c0a10afa331539e69e8955c781b045ae5238599
+    location: https://github.com/georgefst/streamly
+    tag: b2047c3b89537f93a686ddd8cf1879ffb81a8f9a
     subdir: core
-    --sha256: rQbCFeh2BNs2HfL/c6mpJiCH/mkLPCeDEIwmZzNoDzs=
+    --sha256: 7UkLPtnGw07/TRZsS3Vpelm74oGGnss1aupmKiHl2Kw=
