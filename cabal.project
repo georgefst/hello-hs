@@ -1,0 +1,7 @@
+packages: .
+
+source-repository-package
+    type: git
+    location: https://codeberg.org/wxHaskell/wxHaskell
+    tag: 5ce677420cbc49bc810ee075922732ed0f3e838c
+    subdir: wx wxcore wxdirect
