@@ -11,5 +11,30 @@ executable hello-hs
     default-language: GHC2021
     ghc-options:
         -Wall
+    other-modules:
+        Util.OpenWeatherMap
+        Util.Secrets
+        Util.Spotify
+        Util.TFL
+        Util.TFLMiso
+        Util.TFLTypes
     build-depends:
         base >=4.14,
+        aeson,
+        bytestring,
+        containers,
+        extra,
+        ghc-experimental,
+        jsaddle,
+        miso,
+        mtl,
+        optics,
+        servant,
+        servant-client-js,
+        servant-flatten,
+        spotify,
+        spotify:spotify-servant,
+        template-haskell,
+        text,
+        time,
+        transformers,
