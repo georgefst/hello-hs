@@ -20,6 +20,7 @@
                     ([
                       p.mingwW64
                       p.ghcjs
+                      p.wasi32
                     ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux
                       [
                         p.musl64
