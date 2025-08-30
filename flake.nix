@@ -13,7 +13,7 @@
             myHaskellProject =
               final.haskell-nix.hix.project {
                 src = ./.;
-                compiler-nix-name = "ghc9101";
+                compiler-nix-name = "ghc9122";
                 evalSystem = "x86_64-linux";
                 crossPlatforms = p:
                   pkgs.lib.optionals pkgs.stdenv.hostPlatform.isx86_64
