@@ -1,14 +1,14 @@
 # basically from https://input-output-hk.github.io/haskell.nix/tutorials/getting-started-flakes.html#scaffolding
 {
   description = "Basic Haskell flake";
-  inputs.haskellNix.url = "github:input-output-hk/haskell.nix";
-  inputs.nixpkgs.follows = "haskellNix/nixpkgs-unstable";
+  inputs.haskell-nix.url = "github:input-output-hk/haskell.nix";
+  inputs.nixpkgs.follows = "haskell-nix/nixpkgs-2511";
   inputs.flake-utils.url = "github:numtide/flake-utils";
-  outputs = { self, nixpkgs, flake-utils, haskellNix }:
+  outputs = { self, nixpkgs, flake-utils, haskell-nix }:
     flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-darwin" ] (system:
       let
         overlays = [
-          haskellNix.overlay
+          haskell-nix.overlay
           (final: prev: {
             myHaskellProject =
               final.haskell-nix.hix.project {
@@ -18,9 +18,10 @@
                 crossPlatforms = p:
                   pkgs.lib.optionals pkgs.stdenv.hostPlatform.isx86_64
                     ([
-                      p.mingwW64
                       p.ghcjs
                       p.wasi32
+                      # TODO not currently available in caches, and takes a long time to build from source
+                      # p.mingwW64
                     ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux
                       [
                         p.musl64
@@ -33,7 +34,7 @@
               };
           })
         ];
-        pkgs = import nixpkgs { inherit system overlays; inherit (haskellNix) config; };
+        pkgs = import nixpkgs { inherit system overlays; inherit (haskell-nix) config; };
       in
       pkgs.myHaskellProject.flake { });
 }
