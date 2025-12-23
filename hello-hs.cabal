@@ -5,6 +5,16 @@ license-file: LICENSE
 author: George Thomas
 maintainer: georgefsthomas@gmail.com
 
+library
+    exposed-modules:
+        Lib
+    hs-source-dirs: lib
+    default-language: GHC2021
+    ghc-options:
+        -Wall
+    build-depends:
+        base >=4.14,
+
 executable hello-hs
     main-is: Main.hs
     hs-source-dirs: app
@@ -12,4 +22,5 @@ executable hello-hs
     ghc-options:
         -Wall
     build-depends:
+        hello-hs,
         base >=4.14,
