@@ -18,14 +18,14 @@
                 crossPlatforms = p:
                   pkgs.lib.optionals pkgs.stdenv.hostPlatform.isx86_64
                     ([
-                      p.ghcjs
+                      # p.ghcjs
                       p.wasi32
                       # TODO not currently available in caches, and takes a long time to build from source
                       # p.mingwW64
                     ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux
                       [
-                        p.musl64
-                        p.aarch64-multiplatform
+                        # p.musl64
+                        # p.aarch64-multiplatform
                       ]
                     );
                 shell.tools.cabal = "latest";
