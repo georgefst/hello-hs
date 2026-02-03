@@ -5,3 +5,6 @@ source-repository-package
   location: https://github.com/dmjio/miso
   tag: 49b167bd2db9c193c63cd50a8ce0941564696893
   --sha256: hNNcOqtFNC62i19Kjwy1CsJgX3BVs4R+5AtdIHIJzPE=
+
+allow-newer:
+  miso:template-haskell,
