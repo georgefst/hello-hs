@@ -1,7 +1,7 @@
 # basically from https://input-output-hk.github.io/haskell.nix/tutorials/getting-started-flakes.html#scaffolding
 {
   description = "Basic Haskell flake";
-  inputs.haskell-nix.url = "github:input-output-hk/haskell.nix/hkm/ghc914X";
+  inputs.haskell-nix.url = "github:georgefst/haskell.nix/wasm-9.14.1";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-2511";
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.hls-2-13 = { url = "github:haskell/haskell-language-server/2.13.0.0"; flake = false; };
