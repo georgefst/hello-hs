@@ -31,6 +31,13 @@
                 shell.tools.cabal = "latest";
                 shell.tools.haskell-language-server.src = inputs.hls-2-13;
                 shell.withHoogle = false;
+                shell.shellHook = ''
+                  wasm32-unknown-wasi-cabal() {
+                    NIX_LDFLAGS=$(echo "$NIX_LDFLAGS" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
+                    NIX_LDFLAGS_FOR_TARGET=$(echo "$NIX_LDFLAGS_FOR_TARGET" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
+                    command wasm32-unknown-wasi-cabal "$@"
+                  }
+                '';
               };
           })
         ];
