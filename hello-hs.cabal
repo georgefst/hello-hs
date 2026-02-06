@@ -5,6 +5,10 @@ license-file: LICENSE
 author: George Thomas
 maintainer: georgefsthomas@gmail.com
 
+flag interactive
+  default: False
+  manual: True
+
 executable hello-hs
     main-is: Main.hs
     hs-source-dirs: app
@@ -27,8 +31,18 @@ executable hello-hs
         RecordWildCards
         ViewPatterns
     ghc-options:
-        -threaded
         -Wall
     build-depends:
         base >=4.14,
         miso,
+    if arch(wasm32)
+        ghc-options:
+            -no-hs-main -optl-mexec-model=reactor "-optl-Wl,--export=hs_start"
+        cpp-options:
+            -DWASM
+        if flag(interactive)
+            cpp-options:
+                -DINTERACTIVE
+    else
+        ghc-options:
+            -threaded
