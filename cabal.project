@@ -8,3 +8,6 @@ source-repository-package
 
 allow-newer:
   miso:template-haskell,
+
+if arch(wasm32)
+  shared: True
