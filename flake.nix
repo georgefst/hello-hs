@@ -4,7 +4,7 @@
   inputs.haskell-nix.url = "github:input-output-hk/haskell.nix";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-2511";
   inputs.flake-utils.url = "github:numtide/flake-utils";
-  outputs = { self, nixpkgs, flake-utils, haskell-nix }:
+  outputs = inputs@{ self, nixpkgs, flake-utils, haskell-nix, ... }:
     flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-darwin" ] (system:
       let
         overlays = [
