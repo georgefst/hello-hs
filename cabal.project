@@ -8,3 +8,5 @@ source-repository-package
 
 allow-newer:
   miso:template-haskell,
+
+shared: True

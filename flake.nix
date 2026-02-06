@@ -32,17 +32,31 @@
                 shell.tools.cabal = "latest";
                 shell.tools.haskell-language-server.src = inputs.hls-2-13;
                 shell.withHoogle = false;
+                shell.nativeBuildInputs = [ ws ];
                 shell.shellHook = ''
                   wasm32-unknown-wasi-cabal() {
                     NIX_LDFLAGS=$(echo "$NIX_LDFLAGS" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
                     NIX_LDFLAGS_FOR_TARGET=$(echo "$NIX_LDFLAGS_FOR_TARGET" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
                     command wasm32-unknown-wasi-cabal "$@"
                   }
+                  export NODE_PATH="${ws}/lib/node_modules''${NODE_PATH:+:$NODE_PATH}"
                 '';
               };
           })
         ];
         pkgs = import nixpkgs { inherit system overlays; inherit (haskell-nix) config; };
+        ws = pkgs.stdenv.mkDerivation {
+          pname = "ws";
+          version = "8.18.0";
+          src = pkgs.fetchurl {
+            url = "https://registry.npmjs.org/ws/-/ws-8.18.0.tgz";
+            hash = "sha256-oIIh8oUUcslEygF42JqYiMf0P72ZmK/Ip+xv5BfEyiA=";
+          };
+          installPhase = ''
+            mkdir -p $out/lib/node_modules/ws
+            cp -r . $out/lib/node_modules/ws
+          '';
+        };
       in
       pkgs.myHaskellProject.flake { });
 }
