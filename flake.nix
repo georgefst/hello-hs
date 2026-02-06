@@ -49,6 +49,24 @@
                   };
                 };
                 shell.withHoogle = false;
+                shell.shellHook =
+                  let
+                    ws = pkgs.stdenv.mkDerivation {
+                      pname = "ws";
+                      version = "8.18.0";
+                      src = pkgs.fetchurl {
+                        url = "https://registry.npmjs.org/ws/-/ws-8.18.0.tgz";
+                        hash = "sha256-oIIh8oUUcslEygF42JqYiMf0P72ZmK/Ip+xv5BfEyiA=";
+                      };
+                      installPhase = ''
+                        mkdir -p $out/lib/node_modules/ws
+                        cp -r . $out/lib/node_modules/ws
+                      '';
+                    };
+                  in
+                  ''
+                    export NODE_PATH="${ws}/lib/node_modules''${NODE_PATH:+:$NODE_PATH}"
+                  '';
               };
           })
         ];
