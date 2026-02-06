@@ -3,6 +3,7 @@
   inputs.haskell-nix.url = "github:input-output-hk/haskell.nix";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-2511";
   inputs.flake-utils.url = "github:numtide/flake-utils";
+  inputs.hls-2-13 = { url = "github:haskell/haskell-language-server/2.13.0.0"; flake = false; };
   outputs = inputs@{ self, nixpkgs, flake-utils, haskell-nix, ... }:
     flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-darwin" ] (system:
       let
@@ -12,7 +13,7 @@
             myHaskellProject =
               final.haskell-nix.hix.project {
                 src = ./.;
-                compiler-nix-name = "ghc9122";
+                compiler-nix-name = "ghc9141";
                 evalSystem = "x86_64-linux";
                 crossPlatforms = p:
                   final.lib.optionals final.stdenv.hostPlatform.isx86_64
@@ -25,8 +26,7 @@
                       ]
                     );
                 shell.tools.cabal = "latest";
-                shell.tools.hlint = "latest";
-                shell.tools.haskell-language-server = "latest";
+                shell.tools.haskell-language-server.src = inputs.hls-2-13;
                 shell.withHoogle = false;
               };
           })
