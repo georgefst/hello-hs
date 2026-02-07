@@ -1,4 +1,3 @@
-# basically from https://input-output-hk.github.io/haskell.nix/tutorials/getting-started-flakes.html#scaffolding
 {
   description = "Basic Haskell flake";
   inputs.haskell-nix.url = "github:input-output-hk/haskell.nix";
