@@ -3,11 +3,8 @@ packages: .
 source-repository-package
   type: git
   location: https://github.com/dmjio/miso
-  tag: 49b167bd2db9c193c63cd50a8ce0941564696893
-  --sha256: hNNcOqtFNC62i19Kjwy1CsJgX3BVs4R+5AtdIHIJzPE=
-
-allow-newer:
-  miso:template-haskell,
+  tag: e5871007c474048e6ff68657249f0ed9073d774f
+  --sha256: k70wvAKqw0txmazfwB/FU8MvjjzyWcXX9n6VNDbUN+c=
 
 if arch(wasm32)
   shared: True
