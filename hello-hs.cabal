@@ -13,15 +13,33 @@ executable hello-hs
     main-is: Main.hs
     hs-source-dirs: app
     other-modules:
+        Util.FixedLengthQueue
         Util.MisoAesonDeriving
+        Util.MisoOptics
+        Util.Shuffle
+        Util.Util
     default-language: GHC2021
     ghc-options:
         -Wall
     build-depends:
         base >=4.14,
         aeson,
+        colour,
+        containers,
+        extra,
+        generic-optics,
+        linear,
+        massiv,
         miso-aeson,
         miso,
+        mtl,
+        optics-operators,
+        optics,
+        random,
+        safe,
+        text,
+        time,
+        unordered-containers,
     if arch(wasm32)
         ghc-options:
             -no-hs-main -optl-mexec-model=reactor "-optl-Wl,--export=hs_start"
