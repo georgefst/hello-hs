@@ -42,7 +42,12 @@
                   '')
                 ];
                 shell.tools.cabal = "latest";
-                shell.tools.haskell-language-server.src = inputs.hls-2-13;
+                shell.tools.haskell-language-server = {
+                  src = inputs.hls-2-13;
+                  sha256map = {
+                    "https://github.com/snowleopard/alga"."d4e43fb42db05413459fb2df493361d5a666588a" = "0s1mlnl64wj7pkg3iipv5bb4syy3bhxwqzqv93zqlvkyfn64015i";
+                  };
+                };
                 shell.withHoogle = false;
               };
           })
