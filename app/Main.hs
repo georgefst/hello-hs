@@ -1,26 +1,3 @@
-{- TODO major missing features (rough priority order):
-- pause
-- retry after game over
-- score
-    - incl. tracking
-        - local storage, with warning about no further persistence?
-- levels
-    - we have them but they're only changeable manually
-    - the way this is currently implemented is awkward because of Miso's API
-        - we need to know the current level in order to know how long to wait
-            - so instead we tick a lot more than necessary in the early levels
-            - note that this approach is imperfect anyway - we'd want to record deltas for better precision
-- better options
-    - avoid hardcoding
-    - better defaults, incl. for stylesheet, e.g. piece colours
-    - more options (careful about how well they work together, e.g. different grid sizes may not work well with our CSS)
-        - stylesheet
-        - start from a later level
-        - more features from later versions - hold, wall kicks, ghost piece
-- record move history for review/analysis
-- sound
-- animations
--}
 {-# LANGUAGE GHC2024 #-}
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE CPP #-}
