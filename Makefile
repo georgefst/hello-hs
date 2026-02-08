@@ -1,5 +1,5 @@
 repl:
-	wasm32-unknown-wasi-cabal repl hello-hs -finteractive --repl-options="-fghci-browser -fghci-browser-port=8080"
+	wasm32-unknown-wasi-cabal repl hello-hs -finteractive
 
 watch:
 	ghciwatch --after-startup-ghci :main --after-reload-ghci :main --watch . --debounce 50ms --command 'wasm32-unknown-wasi-cabal repl hello-hs -finteractive --repl-options="-fghci-browser -fghci-browser-port=8080"'
