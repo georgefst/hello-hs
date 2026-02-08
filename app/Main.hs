@@ -125,7 +125,7 @@ opts =
         , startLevel
         , topLevel
         , keyDelays = \case
-            RotateLeft; RotateRight; HardDrop; Reset -> Nothing
+            RotateLeft; RotateRight; HardDrop; Pause; Reset -> Nothing
             MoveLeft; MoveRight; SoftDrop -> Just (0.12, 0.02)
         , tickLength = 0.05
         , rate = \l -> fromIntegral $ topLevel + 1 - clamp (startLevel, topLevel) l
@@ -144,6 +144,7 @@ opts =
             88 -> Just RotateRight -- x
             40 -> Just SoftDrop -- down arrow
             32 -> Just HardDrop -- space bar
+            80 -> Just Pause -- p
             82 -> Just Reset -- r
             _ -> Nothing
         }
@@ -161,6 +162,7 @@ data KeyAction
     | RotateRight
     | SoftDrop
     | HardDrop
+    | Pause
     | Reset
     deriving (Eq, Ord, Show, Enum, Bounded, Generic)
     deriving (Aeson.FromJSON, Aeson.ToJSON)
@@ -257,6 +259,7 @@ data Model = Model
     , current :: ActivePiece
     , next :: FLQ.Queue Piece
     , ticks :: Word
+    , paused :: Bool
     , level :: Level
     , random :: ([Piece], StdGen)
     , gameOver :: Bool
@@ -264,7 +267,7 @@ data Model = Model
     }
     deriving (Eq, Show, Generic)
 initialModel :: StdGen -> Level -> Model
-initialModel random0 level = Model{pile = emptyGrid, ticks = 0, level, gameOver = False, lineCount = 0, ..}
+initialModel random0 level = Model{pile = emptyGrid, ticks = 0, level, gameOver = False, lineCount = 0, paused = False, ..}
   where
     ((current, next), random) = runRandomPieces ([], random0) do
         curry (bimap newPiece FLQ.fromList)
@@ -302,7 +305,7 @@ grid m0 =
         ( \case
             NoOp s -> io_ $ traverse_ consoleLog s
             Init -> subscribe keysPressedTopic KeyAction (const $ NoOp Nothing)
-            Tick -> do
+            Tick -> unlessM (use #paused) do
                 level <- use #level
                 relevantTick <-
                     #ticks %%= \t ->
@@ -328,6 +331,7 @@ grid m0 =
                 L; J; T -> predDef maxBound
             KeyAction SoftDrop -> void $ tryMove (+ V2 0 1)
             KeyAction HardDrop -> whileM (tryMove (+ V2 0 1)) >> fixPiece
+            KeyAction Pause -> #paused %= not
             KeyAction Reset -> do
                 m <- get
                 put $ initialModel (snd m.random) m.level
