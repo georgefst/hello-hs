@@ -72,7 +72,7 @@ import Miso.CSS qualified as MS
 import Miso.Canvas qualified as Canvas
 import Miso.Html
 import Miso.Html.Property hiding (for_)
-import Miso.JSON (FromJSON, ToJSON)
+import Miso.JSON (FromJSON, ToJSON, Value (String), parseJSON, toJSON, withText)
 import Miso.String (ToMisoString)
 import Optics hiding (uncons)
 import Optics.State.Operators
@@ -158,7 +158,18 @@ data KeyAction
     | RotateRight
     | SoftDrop
     | HardDrop
-    deriving (Eq, Ord, Show, Enum, Bounded, Generic, ToJSON, FromJSON)
+    deriving (Eq, Ord, Show, Enum, Bounded, Generic)
+instance ToJSON KeyAction where
+    toJSON = String . ms . show
+instance FromJSON KeyAction where
+    parseJSON = withText "KeyAction" \case
+        "MoveLeft" -> pure MoveLeft
+        "MoveRight" -> pure MoveRight
+        "RotateLeft" -> pure RotateLeft
+        "RotateRight" -> pure RotateRight
+        "SoftDrop" -> pure SoftDrop
+        "HardDrop" -> pure HardDrop
+        _ -> fail "invalid KeyAction"
 
 data Piece = O | I | S | Z | L | J | T
     deriving (Eq, Ord, Show, Enum, Bounded, Generic, ToJSON, FromJSON)
