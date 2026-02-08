@@ -268,7 +268,16 @@ data Model = Model
     }
     deriving (Eq, Show, Generic)
 initialModel :: StdGen -> Level -> Model
-initialModel random0 level = Model{pile = emptyGrid, ticks = 0, level, gameOver = False, lineCount = 0, paused = False, ..}
+initialModel random0 level =
+    Model
+        { pile = emptyGrid
+        , ticks = 0
+        , level
+        , gameOver = False
+        , lineCount = 0
+        , paused = False
+        , ..
+        }
   where
     ((current, next), random) = runRandomPieces ([], random0) do
         curry (bimap newPiece FLQ.fromList)
