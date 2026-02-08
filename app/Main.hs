@@ -126,7 +126,7 @@ opts =
         , startLevel
         , topLevel
         , keyDelays = \case
-            RotateLeft; RotateRight; HardDrop -> Nothing
+            RotateLeft; RotateRight; HardDrop; Reset -> Nothing
             MoveLeft; MoveRight; SoftDrop -> Just (0.12, 0.02)
         , tickLength = 0.05
         , rate = \l -> fromIntegral $ topLevel + 1 - clamp (startLevel, topLevel) l
@@ -145,6 +145,7 @@ opts =
             88 -> Just RotateRight -- x
             40 -> Just SoftDrop -- down arrow
             32 -> Just HardDrop -- space bar
+            82 -> Just Reset -- r
             _ -> Nothing
         }
   where
@@ -161,6 +162,7 @@ data KeyAction
     | RotateRight
     | SoftDrop
     | HardDrop
+    | Reset
     deriving (Eq, Ord, Show, Enum, Bounded, Generic)
     deriving (Aeson.FromJSON, Aeson.ToJSON)
     deriving (FromJSON, ToJSON) via (MisoAeson KeyAction)
@@ -262,6 +264,13 @@ data Model = Model
     , lineCount :: Word
     }
     deriving (Eq, Show, Generic)
+initialModel :: StdGen -> Level -> Model
+initialModel random0 level = Model{pile = emptyGrid, ticks = 0, level, gameOver = False, lineCount = 0, ..}
+  where
+    ((current, next), random) = runRandomPieces ([], random0) do
+        curry (bimap newPiece FLQ.fromList)
+            <$> liftRandomiser opts.randomiser
+            <*> replicateM (fromIntegral opts.previewLength) (liftRandomiser opts.randomiser)
 
 data Action
     = NoOp (Maybe MisoString)
@@ -288,9 +297,9 @@ gridCanvas w h attrs f = Canvas.canvas
 grid ::
     (HasType (FLQ.Queue Piece) parent, HasType Level parent, HasType Word parent) =>
     Model -> Component parent Model Action
-grid initialModel =
+grid m0 =
     ( component
-        initialModel
+        m0
         ( \case
             NoOp s -> io_ $ traverse_ consoleLog s
             Init -> subscribe keysPressedTopic KeyAction (const $ NoOp Nothing)
@@ -320,6 +329,9 @@ grid initialModel =
                 L; J; T -> predDef maxBound
             KeyAction SoftDrop -> void $ tryMove (+ V2 0 1)
             KeyAction HardDrop -> whileM (tryMove (+ V2 0 1)) >> fixPiece
+            KeyAction Reset -> do
+                m <- get
+                put $ initialModel (snd m.random) m.level
         )
         ( \Model{..} ->
             gridCanvas opts.gridWidth opts.gridHeight (mwhen gameOver [class_ "game-over"]) \f ->
@@ -371,9 +383,9 @@ grid initialModel =
 sidebar ::
     (HasType (FLQ.Queue Piece) parent, HasType Level parent, HasType Word parent) =>
     (FLQ.Queue Piece, Level, Word) -> Component parent (FLQ.Queue Piece, Level, Word) Bool
-sidebar initialModel =
+sidebar m0 =
     ( component
-        initialModel
+        m0
         ( \b ->
             modify . second3 . const . bool (max opts.startLevel . pred) (min opts.topLevel . succ) b =<< gets snd3
         )
@@ -442,26 +454,20 @@ dummyKeyHandler =
         }
 
 app :: StdGen -> Component parent (FLQ.Queue Piece, Level, Word) ()
-app random0 =
+app random =
     component
-        (initialGridModel.next, initialGridModel.level, lineCount)
+        (m.next, m.level, m.lineCount)
         (\() -> pure ())
         ( \_ ->
             div_
                 []
-                [ div_ [id_ "grid"] ["grid" +> grid initialGridModel]
-                , div_ [id_ "sidebar"] ["sidebar" +> sidebar (initialGridModel.next, initialGridModel.level, lineCount)]
+                [ div_ [id_ "grid"] ["grid" +> grid m]
+                , div_ [id_ "sidebar"] ["sidebar" +> sidebar (m.next, m.level, m.lineCount)]
                 , div_ [id_ "dummy-key-handler"] ["dummy-key-handler" +> dummyKeyHandler]
                 ]
         )
   where
-    lineCount = 0
-    initialGridModel = Model{pile = emptyGrid, ticks = 0, level = opts.startLevel, gameOver = False, ..}
-      where
-        ((current, next), random) = runRandomPieces ([], random0) do
-            curry (bimap newPiece FLQ.fromList)
-                <$> liftRandomiser opts.randomiser
-                <*> replicateM (fromIntegral opts.previewLength) (liftRandomiser opts.randomiser)
+    m = initialModel random opts.startLevel
 
 -- a monad for operations which produce finite lists of pieces
 type RandomPieces = StateT [Piece] (State StdGen)
