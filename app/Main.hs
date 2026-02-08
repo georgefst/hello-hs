@@ -127,7 +127,7 @@ opts =
         , topLevel
         , keyDelays = \case
             RotateLeft; RotateRight; HardDrop -> Nothing
-            MoveLeft; MoveRight; SoftDrop -> Just (0.12, 0.03)
+            MoveLeft; MoveRight; SoftDrop -> Just (0.12, 0.02)
         , tickLength = 0.05
         , rate = \l -> fromIntegral $ topLevel + 1 - clamp (startLevel, topLevel) l
         , colours = \case
