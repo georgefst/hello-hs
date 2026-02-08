@@ -12,11 +12,15 @@ flag interactive
 executable hello-hs
     main-is: Main.hs
     hs-source-dirs: app
+    other-modules:
+        Util.MisoAesonDeriving
     default-language: GHC2021
     ghc-options:
         -Wall
     build-depends:
         base >=4.14,
+        aeson,
+        miso-aeson,
         miso,
     if arch(wasm32)
         ghc-options:
