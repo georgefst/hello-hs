@@ -90,7 +90,7 @@ import Util.Util
 main :: IO ()
 main = do
     random <- opts.random
-    let a = startApp defaultEvents $ (app random){styles = [Href "style.css"]}
+    let a = startApp defaultEvents (app random){styles = [Href "style.css"]}
 #ifdef INTERACTIVE
     reload a
 #else
