@@ -25,6 +25,7 @@
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE LexicalNegation #-}
 {-# LANGUAGE NegativeLiterals #-}
@@ -43,6 +44,7 @@ import Control.Monad
 import Control.Monad.Extra
 import Control.Monad.Reader
 import Control.Monad.State.Strict
+import Data.Aeson qualified as Aeson
 import Data.Bifunctor (bimap, first, second)
 import Data.Bool
 import Data.Either.Extra
@@ -72,13 +74,14 @@ import Miso.CSS qualified as MS
 import Miso.Canvas qualified as Canvas
 import Miso.Html
 import Miso.Html.Property hiding (for_)
-import Miso.JSON (FromJSON, ToJSON, Value (String), parseJSON, toJSON, withText)
+import Miso.JSON (FromJSON, ToJSON)
 import Miso.String (ToMisoString)
 import Optics hiding (uncons)
 import Optics.State.Operators
 import Safe (predDef, succDef)
 import System.Random.Stateful hiding (next, random)
 import Util.FixedLengthQueue qualified as FLQ
+import Util.MisoAesonDeriving
 import Util.MisoOptics
 import Util.Shuffle
 import Util.Util
@@ -159,17 +162,8 @@ data KeyAction
     | SoftDrop
     | HardDrop
     deriving (Eq, Ord, Show, Enum, Bounded, Generic)
-instance ToJSON KeyAction where
-    toJSON = String . ms . show
-instance FromJSON KeyAction where
-    parseJSON = withText "KeyAction" \case
-        "MoveLeft" -> pure MoveLeft
-        "MoveRight" -> pure MoveRight
-        "RotateLeft" -> pure RotateLeft
-        "RotateRight" -> pure RotateRight
-        "SoftDrop" -> pure SoftDrop
-        "HardDrop" -> pure HardDrop
-        _ -> fail "invalid KeyAction"
+    deriving (Aeson.FromJSON, Aeson.ToJSON)
+    deriving (FromJSON, ToJSON) via (MisoAeson KeyAction)
 
 data Piece = O | I | S | Z | L | J | T
     deriving (Eq, Ord, Show, Enum, Bounded, Generic, ToJSON, FromJSON)
