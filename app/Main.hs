@@ -78,7 +78,7 @@ import Miso.JSON (FromJSON, ToJSON)
 import Miso.String (ToMisoString)
 import Optics hiding (uncons)
 import Optics.State.Operators
-import Safe (predDef, succDef)
+import Safe (predDef, predSafe, succDef)
 import System.Random.Stateful hiding (next, random)
 import Util.FixedLengthQueue qualified as FLQ
 import Util.MisoAesonDeriving
@@ -154,7 +154,7 @@ opts =
     topLevel = Level 10
 
 newtype Level = Level Word
-    deriving newtype (Eq, Ord, Show, Enum, Num, Real, Integral, ToJSON, FromJSON, ToMisoString)
+    deriving newtype (Eq, Ord, Show, Enum, Bounded, Num, Real, Integral, ToJSON, FromJSON, ToMisoString)
 
 data KeyAction
     = MoveLeft
@@ -400,7 +400,7 @@ sidebar m0 =
     ( component
         m0
         ( \b ->
-            modify . second3 . const . bool (max opts.startLevel . pred) (min opts.topLevel . succ) b =<< gets snd3
+            modify . second3 . const . bool predSafe (min opts.topLevel . succDef opts.topLevel) b =<< gets snd3
         )
         ( \(pieces, level, lineCount) ->
             div_
