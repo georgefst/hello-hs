@@ -68,7 +68,7 @@ import Data.Time (NominalDiffTime)
 import Data.Tuple.Extra (second3, snd3)
 import GHC.Generics (Generic)
 import Linear (R1 (_x), R2 (_y), V2 (V2))
-import Miso hiding (for, new, (--->), (<---))
+import Miso hiding (for, new, (--->), (<---), (<--->))
 import Miso.CSS (Color)
 import Miso.CSS qualified as MS
 import Miso.Canvas qualified as Canvas
@@ -105,7 +105,6 @@ data Opts = Opts
     , ghost :: Bool
     , random :: IO StdGen
     , randomiser :: State StdGen (NonEmpty Piece)
-    , startLevel :: Level
     , topLevel :: Level
     , keyDelays :: KeyAction -> Maybe (NominalDiffTime, NominalDiffTime)
     , tickLength :: NominalDiffTime
@@ -123,11 +122,10 @@ opts =
         , ghost = False
         , random = newStdGen
         , randomiser = flip shuffleM StateGenM . (:| enumerate) =<< uniformM StateGenM
-        , startLevel
         , topLevel
         , keyDelays = \case
             RotateLeft; RotateRight; HardDrop; Pause; Reset -> Nothing
-            MoveLeft; MoveRight; SoftDrop -> Just (0.12, 0.02)
+            MoveLeft; MoveRight; SoftDrop; LevelDown; LevelUp -> Just (0.12, 0.02)
         , tickLength = 0.05
         , rate = \l -> fromIntegral $ topLevel + 1 - clamp (startLevel, topLevel) l
         , colours = \case
@@ -145,6 +143,8 @@ opts =
             88 -> Just RotateRight -- x
             40 -> Just SoftDrop -- down arrow
             32 -> Just HardDrop -- space bar
+            173 -> Just LevelDown -- minus
+            61 -> Just LevelUp -- plus
             80 -> Just Pause -- p
             82 -> Just Reset -- r
             _ -> Nothing
@@ -163,6 +163,8 @@ data KeyAction
     | RotateRight
     | SoftDrop
     | HardDrop
+    | LevelDown
+    | LevelUp
     | Pause
     | Reset
     deriving (Eq, Ord, Show, Enum, Bounded, Generic)
@@ -341,6 +343,8 @@ grid m0 =
                 L; J; T -> predDef maxBound
             KeyAction SoftDrop -> void $ tryMove (+ V2 0 1)
             KeyAction HardDrop -> whileM (tryMove (+ V2 0 1)) >> fixPiece
+            KeyAction LevelDown -> #level %= predSafe
+            KeyAction LevelUp -> #level %= min opts.topLevel . succDef opts.topLevel
             KeyAction Pause -> #paused %= not
             KeyAction Reset -> do
                 m <- get
@@ -369,7 +373,7 @@ grid m0 =
         , mount = Just Init
         , bindings =
             [ typed <--- #next
-            , typed ---> #level
+            , typed <---> #level
             , typed <--- #lineCount
             ]
         }
@@ -429,7 +433,7 @@ sidebar m0 =
     )
         { bindings =
             [ typed ---> _1
-            , typed <--- _2
+            , typed <---> _2
             , typed ---> _3
             ]
         }
@@ -480,7 +484,7 @@ app random =
                 ]
         )
   where
-    m = initialModel random opts.startLevel
+    m = initialModel random 0
 
 -- a monad for operations which produce finite lists of pieces
 type RandomPieces = StateT [Piece] (State StdGen)
