@@ -1,11 +1,11 @@
 cabal-version: 3.0
-name: hello-hs
+name: georgefstris
 version: 0.1.0.0
 license-file: LICENSE
 author: George Thomas
 maintainer: georgefsthomas@gmail.com
 
-executable hello-hs
+executable georgefstris
     main-is: Main.hs
     hs-source-dirs: app
     other-modules:
