@@ -13,11 +13,11 @@ executable hello-hs
     main-is: Main.hs
     hs-source-dirs: app
     other-modules:
+        Util
         Util.FixedLengthQueue
         Util.MisoAesonDeriving
         Util.MisoOptics
         Util.Shuffle
-        Util.Util
     default-language: GHC2024
     default-extensions:
         BlockArguments
