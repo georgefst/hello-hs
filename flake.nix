@@ -30,10 +30,14 @@
                     );
                 shell.nativeBuildInputs =
                   let
-                    wasm-dummy-liblibdl = pkgs.runCommand "liblibdl" { } ''
-                      mkdir -p $out/lib
-                      ln -s ${pkgs.pkgsCross.wasi32.wasilibc}/lib/libdl.so $out/lib/liblibdl.so
-                    '';
+                    wasm-dummy-liblibdl = pkgs.runCommand "liblibdl"
+                      {
+                        nativeBuildInputs = [ pkgs.pkgsCross.wasi32.buildPackages.llvmPackages.clang ];
+                      }
+                      ''
+                        mkdir -p $out/lib
+                        echo 'void __liblibdl_stub(void) {}' | wasm32-unknown-wasi-cc -shared -x c - -o $out/lib/liblibdl.so 2>/dev/null
+                      '';
                   in
                   [
                   (pkgs.writeShellScriptBin "wasm32-unknown-wasi-cabal" ''
