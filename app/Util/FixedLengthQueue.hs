@@ -1,10 +1,4 @@
 -- TODO publish on Hackage (potentially based on `vector` rather than `massiv`)
-{-# LANGUAGE GHC2024 #-}
-{-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE PartialTypeSignatures #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# OPTIONS_GHC -Wall #-}
-
 module Util.FixedLengthQueue (
     Queue,
     shift,
