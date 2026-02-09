@@ -4,6 +4,10 @@ version: 0.1.0.0
 license-file: LICENSE
 author: George Thomas
 maintainer: georgefsthomas@gmail.com
+extra-source-files:
+    static/style.css
+extra-doc-files:
+    static/style.css
 
 flag interactive
   default: False
@@ -42,6 +46,7 @@ executable hello-hs
         colour,
         containers,
         extra,
+        file-embed,
         generic-optics,
         linear,
         massiv,
