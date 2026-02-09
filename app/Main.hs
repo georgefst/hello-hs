@@ -1,4 +1,6 @@
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE MultilineStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Georgefstris (main) where
 
@@ -48,15 +50,21 @@ import Util.MisoAesonDeriving
 import Util.MisoOptics
 import Util.Shuffle
 
+#ifdef INTERACTIVE
+import Data.FileEmbed
+import Data.Text.Encoding
+#endif
+
 {- FOURMOLU_DISABLE -}
 main :: IO ()
 main = do
     random <- opts.random
-    let a = startApp defaultEvents (app random){styles = [Href "style.css"]}
+    let a styles = startApp defaultEvents (app random){styles}
 #ifdef INTERACTIVE
-    reload a
+    -- reload $ a [Style $ ms $ decodeUtf8 $(embedFile "static/style.css")]
+    reload $ a [Style styleCss]
 #else
-    a
+    a [Href "style.css"]
 #endif
 {- FOURMOLU_ENABLE -}
 
@@ -476,5 +484,74 @@ cssVar k v = MS.styleInline_ $ "--" <> k <> ": " <> ms v
 #ifndef INTERACTIVE
 foreign export javascript "hs_start" main :: IO ()
 #endif
+styleCss :: MisoString
+styleCss = """
+:root {
+  font-size: x-large;
+  color: black;
+  background-color: #162745;
+  --pixel-size: 2rem;
+}
+
+body {
+  margin: 0;
+  font-family: Helvetica, Arial, sans-serif;
+  height: 100vh;
+  > div {
+    height: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+}
+
+#grid {
+  > canvas {
+    background-color: white;
+    image-rendering: pixelated;
+    height: calc(var(--canvas-height) * var(--pixel-size));
+    &.game-over {
+      filter: grayscale(75%) brightness(0.5);
+    }
+  }
+}
+
+#sidebar {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  > div {
+    height: 100%;
+    display: grid;
+    grid-auto-rows: 1fr;
+    align-items: center;
+    justify-items: center;
+    > .next {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      > canvas {
+        height: calc(var(--canvas-height) * var(--pixel-size));
+        image-rendering: pixelated;
+      }
+    }
+    > .line-count {
+      color: white;
+    }
+    > .level {
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 9rem;
+      > button {
+        width: 3rem;
+        height: 3rem;
+      }
+    }
+  }
+}
+"""
 #endif
 {- FOURMOLU_ENABLE -}
