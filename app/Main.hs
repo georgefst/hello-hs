@@ -1,19 +1,4 @@
-{-# LANGUAGE GHC2024 #-}
-{-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE CPP #-}
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DerivingVia #-}
-{-# LANGUAGE DuplicateRecordFields #-}
-{-# LANGUAGE LexicalNegation #-}
-{-# LANGUAGE NegativeLiterals #-}
-{-# LANGUAGE OrPatterns #-}
-{-# LANGUAGE OverloadedLabels #-}
-{-# LANGUAGE OverloadedRecordDot #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE ViewPatterns #-}
-{-# LANGUAGE NoFieldSelectors #-}
-{-# OPTIONS_GHC -Wall #-}
 
 module Georgefstris (main) where
 

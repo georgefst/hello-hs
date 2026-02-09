@@ -15,6 +15,21 @@ executable georgefstris
         Util.Shuffle
         Util.Util
     default-language: GHC2024
+    default-extensions:
+        BlockArguments
+        CPP
+        DeriveAnyClass
+        DerivingVia
+        DuplicateRecordFields
+        LexicalNegation
+        OrPatterns
+        OverloadedLabels
+        OverloadedRecordDot
+        PartialTypeSignatures
+        OverloadedStrings
+        RecordWildCards
+        ViewPatterns
+        NoFieldSelectors
     ghc-options:
         -Wall
     build-depends:
