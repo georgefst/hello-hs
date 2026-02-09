@@ -40,19 +40,19 @@
                       '';
                   in
                   [
-                  (pkgs.writeShellScriptBin "wasm32-unknown-wasi-cabal" ''
-                    LD_LIBRARY_PATH="${wasm-dummy-liblibdl}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
-                    NIX_LDFLAGS=$(echo "$NIX_LDFLAGS" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
-                    NIX_LDFLAGS_FOR_TARGET=$(echo "$NIX_LDFLAGS_FOR_TARGET" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
-                    exec cabal \
-                      --with-ghc=wasm32-unknown-wasi-ghc \
-                      --with-compiler=wasm32-unknown-wasi-ghc \
-                      --with-ghc-pkg=wasm32-unknown-wasi-ghc-pkg \
-                      --with-hsc2hs=wasm32-unknown-wasi-hsc2hs \
-                      $(builtin type -P "wasm32-unknown-wasi-pkg-config" &> /dev/null && echo "--with-pkg-config=wasm32-unknown-wasi-pkg-config") \
-                      "$@"
-                  '')
-                ];
+                    (pkgs.writeShellScriptBin "wasm32-unknown-wasi-cabal" ''
+                      LD_LIBRARY_PATH="${wasm-dummy-liblibdl}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
+                      NIX_LDFLAGS=$(echo "$NIX_LDFLAGS" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
+                      NIX_LDFLAGS_FOR_TARGET=$(echo "$NIX_LDFLAGS_FOR_TARGET" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
+                      exec cabal \
+                        --with-ghc=wasm32-unknown-wasi-ghc \
+                        --with-compiler=wasm32-unknown-wasi-ghc \
+                        --with-ghc-pkg=wasm32-unknown-wasi-ghc-pkg \
+                        --with-hsc2hs=wasm32-unknown-wasi-hsc2hs \
+                        $(builtin type -P "wasm32-unknown-wasi-pkg-config" &> /dev/null && echo "--with-pkg-config=wasm32-unknown-wasi-pkg-config") \
+                        "$@"
+                    '')
+                  ];
                 shell.tools.cabal = "latest";
                 shell.tools.haskell-language-server = {
                   src = inputs.hls-2-13;
