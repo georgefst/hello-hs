@@ -8,3 +8,15 @@ source-repository-package
 
 if arch(wasm32)
   shared: True
+
+allow-newer:
+  *:base,
+  *:containers,
+  *:template-haskell,
+  *:text,
+  *:time,
+
+constraints:
+  containers installed,
+  text installed,
+  time installed,
