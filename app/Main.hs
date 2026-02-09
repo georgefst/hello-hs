@@ -43,11 +43,11 @@ import Optics.State.Operators
 import Safe (predDef, predSafe, succDef)
 import System.Environment
 import System.Random.Stateful hiding (next, random)
+import Util
 import Util.FixedLengthQueue qualified as FLQ
 import Util.MisoAesonDeriving
 import Util.MisoOptics
 import Util.Shuffle
-import Util.Util
 
 {- FOURMOLU_DISABLE -}
 main :: IO ()

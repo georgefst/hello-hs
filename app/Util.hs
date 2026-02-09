@@ -1,4 +1,4 @@
-module Util.Util where
+module Util where
 
 import Control.Concurrent (threadDelay)
 import Control.Monad.IO.Class (MonadIO, liftIO)
