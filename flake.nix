@@ -28,8 +28,16 @@
                         # p.aarch64-multiplatform
                       ]
                     );
-                shell.nativeBuildInputs = [
+                shell.nativeBuildInputs =
+                  let
+                    wasm-dummy-liblibdl = pkgs.runCommand "liblibdl" { } ''
+                      mkdir -p $out/lib
+                      ln -s ${pkgs.pkgsCross.wasi32.wasilibc}/lib/libdl.so $out/lib/liblibdl.so
+                    '';
+                  in
+                  [
                   (pkgs.writeShellScriptBin "wasm32-unknown-wasi-cabal" ''
+                    LD_LIBRARY_PATH="${wasm-dummy-liblibdl}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
                     NIX_LDFLAGS=$(echo "$NIX_LDFLAGS" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
                     NIX_LDFLAGS_FOR_TARGET=$(echo "$NIX_LDFLAGS_FOR_TARGET" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
                     exec cabal \
