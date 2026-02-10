@@ -335,9 +335,18 @@ grid m0 =
         )
     )
         { subs =
+            -- aha, any attempt to change state in response to the tick here triggers the "parent" type error
+            -- I assume the issue is that we're triggering delayed events callbacks,
+            -- and then they try to edit a model that no longer exists
+            -- or something like that
+            -- still happens on recent Miso
+            -- I'm not quite sure why swapping these two lines fixes it
+            -- and of course it does have the slight downside that we have to wait a tick before the game starts
+            -- Tick -> pure ()
+            -- Tick -> #level += 1
             [ \sink -> forever do
-                sink Tick
                 threadDelay' opts.tickLength
+                sink Tick
             ]
         , mount = Just Init
         , bindings =
