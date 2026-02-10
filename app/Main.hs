@@ -29,6 +29,8 @@ import Data.Optics.Operators
 import Data.Ord (clamp)
 import Data.Set qualified as Set
 import Data.Time (NominalDiffTime)
+import Data.Word
+import Foreign.Store
 import GHC.Generics (Generic)
 import Linear (R1 (_x), R2 (_y), V2 (V2))
 import Miso hiding (for, new, (--->), (<---), (<--->))
@@ -58,7 +60,21 @@ import Data.Text.Encoding
 main :: IO ()
 main = do
     random <- opts.random
-    let a styles = startApp defaultEvents (app random){styles}
+    -- TODO hardcoding ID is said in docs to be "hideously unsafe"
+    -- but we need to use the same one after reload somehow
+    -- use GHCIWatch hooks to run this on init instead?
+    let foreignStoreId = 0 :: Word32
+    model <- maybe (pure $ initialModel random 0) readStore
+        -- TODO find better way of allowing the developer to signal that old state should be thrown away (per component)
+        -- uncomment this line to reset the state, without restarting REPL
+        -- =<< const (pure Nothing)
+        -- TODO catch failures here, e.g. for when the model type has changed
+        =<< lookupStore foreignStoreId
+    -- TODO it'd be simpler if we could write to the store on unmount only, instead of every update
+    -- and in theory more efficient, at least for huge models
+    -- but the unmount action doesn't get run on reload
+    -- and actually, given that it can't do IO directly, we'd need a new action as well...
+    let a styles = startApp defaultEvents (app foreignStoreId model){styles, mount = Just "mounting", unmount = Just "unmounting"}
 #ifdef INTERACTIVE
     -- reload $ a [Style $ ms $ decodeUtf8 $(embedFile "static/style.css")]
     reload $ a [Style styleCss]
@@ -279,11 +295,11 @@ gridCanvas w h attrs f = Canvas.canvas
 
 grid ::
     (HasType (FLQ.Queue Piece) parent, HasType Level parent, HasType Word parent) =>
-    Model -> Component parent Model Action
-grid m0 =
+    Word32 -> Model -> Component parent Model Action
+grid foreignStoreId m0 =
     ( component
         m0
-        ( \case
+        ( (>> (io_ . writeStore (Store foreignStoreId) =<< get)) . \case
             NoOp s -> io_ $ traverse_ consoleLog s
             Init -> subscribe keysPressedTopic KeyAction (const $ NoOp Nothing)
             Tick -> unlessM (use #paused) do
@@ -449,21 +465,19 @@ dummyKeyHandler =
         { subs = [keyboardSub $ Right . IntSet.toList]
         }
 
-app :: StdGen -> Component parent (FLQ.Queue Piece, Level, Word) ()
-app random =
+app :: Word32 -> Model -> Component parent (FLQ.Queue Piece, Level, Word) MisoString
+app foreignStoreId m =
     component
         (m.next, m.level, m.lineCount)
-        (\() -> pure ())
+        (io_ . consoleLog)
         ( \_ ->
             div_
                 []
-                [ div_ [id_ "grid"] ["grid" +> grid m]
+                [ div_ [id_ "grid"] ["grid" +> grid foreignStoreId m]
                 , div_ [id_ "sidebar"] ["sidebar" +> sidebar (m.next, m.level, m.lineCount)]
                 , div_ [id_ "dummy-key-handler"] ["dummy-key-handler" +> dummyKeyHandler]
                 ]
         )
-  where
-    m = initialModel random 0
 
 -- a monad for operations which produce finite lists of pieces
 type RandomPieces = StateT [Piece] (State StdGen)

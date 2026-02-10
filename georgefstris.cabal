@@ -47,6 +47,7 @@ executable georgefstris
         containers,
         extra,
         file-embed,
+        foreign-store,
         generic-optics,
         linear,
         massiv,
