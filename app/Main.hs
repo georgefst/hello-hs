@@ -29,7 +29,6 @@ import Data.Optics.Operators
 import Data.Ord (clamp)
 import Data.Set qualified as Set
 import Data.Time (NominalDiffTime)
-import Data.Tuple.Extra (second3, snd3)
 import GHC.Generics (Generic)
 import Linear (R1 (_x), R2 (_y), V2 (V2))
 import Miso hiding (for, new, (--->), (<---), (<--->))
@@ -369,13 +368,11 @@ grid m0 =
 
 sidebar ::
     (HasType (FLQ.Queue Piece) parent, HasType Level parent, HasType Word parent) =>
-    (FLQ.Queue Piece, Level, Word) -> Component parent (FLQ.Queue Piece, Level, Word) Bool
+    (FLQ.Queue Piece, Level, Word) -> Component parent (FLQ.Queue Piece, Level, Word) ()
 sidebar m0 =
     ( component
         m0
-        ( \b ->
-            modify . second3 . const . bool predSafe (min opts.topLevel . succDef opts.topLevel) b =<< gets snd3
-        )
+        (\() -> pure ())
         ( \(pieces, level, lineCount) ->
             div_
                 []
@@ -391,19 +388,22 @@ sidebar m0 =
                                 gridCanvas w h [] \f -> for_ ((- vMin) <$> ps) $ f piece False
                             ]
                   )
-                    <> [ div_ [class_ "line-count"] [div_ [] [text $ ms lineCount]]
-                       , div_
+                    <> [ div_
                             [class_ "level"]
-                            [ button_ [onClick False] [text "-"]
+                            [ div_ [] [text "Level:"]
                             , div_ [] [text $ ms level]
-                            , button_ [onClick True] [text "+"]
+                            ]
+                       , div_
+                            [class_ "line-count"]
+                            [ div_ [] [text "Lines cleared:"]
+                            , div_ [] [text $ ms lineCount]
                             ]
                        ]
         )
     )
         { bindings =
             [ typed ---> _1
-            , typed <---> _2
+            , typed ---> _2
             , typed ---> _3
             ]
         }
@@ -522,7 +522,7 @@ body {
   justify-content: center;
   align-items: center;
   > div {
-    height: 100%;
+    height: 60%;
     display: grid;
     grid-auto-rows: 1fr;
     align-items: center;
@@ -536,19 +536,13 @@ body {
         image-rendering: pixelated;
       }
     }
-    > .line-count {
+    > .line-count,
+    .level {
       color: white;
-    }
-    > .level {
-      background-color: white;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
       width: 9rem;
-      > button {
-        width: 3rem;
-        height: 3rem;
-      }
     }
   }
 }
