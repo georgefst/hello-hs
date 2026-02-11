@@ -1,0 +1,71 @@
+cabal-version: 3.0
+name: georgefstris
+version: 0.1.0.0
+license-file: LICENSE
+author: George Thomas
+maintainer: georgefsthomas@gmail.com
+extra-source-files:
+    static/style.css
+extra-doc-files:
+    static/style.css
+
+flag interactive
+  default: False
+  manual: True
+
+executable georgefstris
+    main-is: Main.hs
+    hs-source-dirs: app
+    other-modules:
+        Util
+        Util.FixedLengthQueue
+        Util.MisoAesonDeriving
+        Util.MisoOptics
+        Util.Shuffle
+    default-language: GHC2024
+    default-extensions:
+        BlockArguments
+        CPP
+        DeriveAnyClass
+        DerivingVia
+        DuplicateRecordFields
+        LexicalNegation
+        OrPatterns
+        OverloadedLabels
+        OverloadedRecordDot
+        PartialTypeSignatures
+        OverloadedStrings
+        RecordWildCards
+        ViewPatterns
+        NoFieldSelectors
+    ghc-options:
+        -Wall
+    build-depends:
+        base >=4.14,
+        aeson,
+        colour,
+        containers,
+        extra,
+        file-embed,
+        foreign-store,
+        generic-optics,
+        linear,
+        massiv,
+        miso-aeson,
+        miso,
+        mtl,
+        optics-operators,
+        optics,
+        random,
+        safe,
+        text,
+        time,
+        unordered-containers,
+    if arch(wasm32)
+        ghc-options:
+            -no-hs-main -optl-mexec-model=reactor "-optl-Wl,--export=hs_start"
+        cpp-options:
+            -DWASM
+        if flag(interactive)
+            cpp-options:
+                -DINTERACTIVE
