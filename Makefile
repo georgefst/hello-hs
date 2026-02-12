@@ -19,4 +19,4 @@ optim: build
 	wasm-tools strip -o dist/app.wasm dist/app.wasm
 
 serve: build
-	simple-http-server dist --index --nocache --open
+	simple-http-server dist --index --nocache --open -p ${PORT}
