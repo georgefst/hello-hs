@@ -139,7 +139,7 @@ opts =
     topLevel = Level 10
 
 newtype Level = Level Word
-    deriving newtype (Eq, Ord, Show, Enum, Bounded, Num, Real, Integral, ToJSON, FromJSON, ToMisoString)
+    deriving newtype (Eq, Ord, Show, Enum, Bounded, Num, Real, Integral, ToMisoString)
 
 data KeyAction
     = MoveLeft
@@ -157,7 +157,7 @@ data KeyAction
     deriving (FromJSON, ToJSON) via (MisoAeson KeyAction)
 
 data Piece = O | I | S | Z | L | J | T
-    deriving (Eq, Ord, Show, Enum, Bounded, Generic, ToJSON, FromJSON)
+    deriving (Eq, Ord, Show, Enum, Bounded, Generic)
 instance Uniform Piece where uniformM = uniformEnumM
 
 -- inv: list has length 4, and its xs range from -1 to 2 (a single 2 for `I`), and ys from 0 to 1
