@@ -3,8 +3,8 @@ packages: .
 source-repository-package
   type: git
   location: https://github.com/dmjio/miso
-  tag: e5871007c474048e6ff68657249f0ed9073d774f
-  --sha256: k70wvAKqw0txmazfwB/FU8MvjjzyWcXX9n6VNDbUN+c=
+  tag: d87700041498ad0b7cfe6f39bdc30453b4616315
+  --sha256: 1fw9gjjai60mvqa2qql1pk6k2s939z9izdmwdys3svhm6klrbc3w
 source-repository-package
   type: git
   location: https://github.com/haskell-miso/miso-aeson
