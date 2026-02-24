@@ -34,7 +34,7 @@ main = startApp defaultEvents app
 -----------------------------------------------------------------------------
 app :: App Int Action
 app = (component 0 updateModel viewModel)
-  { styles = [ Sheet sheet, Href "style.css" ]
+  { styles = [ Sheet sheet, Href "assets/style.css" ]
   }
 -----------------------------------------------------------------------------
 updateModel :: Action -> Effect parent Int Action
