@@ -6,6 +6,9 @@ import Data.Bifunctor (bimap)
 import Data.List.NonEmpty qualified as NE
 import Data.Time (NominalDiffTime, nominalDiffTimeToSeconds)
 import Data.Tuple.Extra ((&&&))
+import Miso (Attribute)
+import Miso.CSS qualified as MS
+import Miso.String (MisoString, ToMisoString, ms)
 import Optics (Lens', lens, (.~), (^.))
 
 (<<$>>) :: (Functor f1, Functor f2) => (a -> b) -> f1 (f2 a) -> f1 (f2 b)
@@ -34,3 +37,7 @@ threadDelay' = liftIO . threadDelay . round . (* 1_000_000) . nominalDiffTimeToS
 
 fanout :: Lens' s a -> Lens' s b -> Lens' s (a, b)
 fanout l1 l2 = lens ((^. l1) &&& (^. l2)) (flip $ uncurry (.) . bimap (l1 .~) (l2 .~))
+
+-- TODO upstream this? with escaping, obviously
+cssVar :: (ToMisoString a) => MisoString -> a -> Attribute action
+cssVar k v = MS.styleInline_ $ "--" <> k <> ": " <> ms v

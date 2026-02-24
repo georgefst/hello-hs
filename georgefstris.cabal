@@ -9,6 +9,8 @@ executable georgefstris
     main-is: Main.hs
     hs-source-dirs: app
     other-modules:
+        Georgefstris
+        Georgefstris.Miso
         Util
         Util.FixedLengthQueue
         Util.MisoAesonDeriving
