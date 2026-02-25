@@ -151,7 +151,7 @@ grid foreignStoreId m0 =
         , mount = Just Init
         , bindings =
             [ typed <--- #next
-            , typed <---> #level
+            , typed <--- #level
             , typed <--- #lineCount
             ]
         }
