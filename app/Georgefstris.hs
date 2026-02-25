@@ -15,7 +15,7 @@ import Data.Maybe
 import Data.Monoid.Extra
 import Data.Ord (clamp)
 import Data.Time (NominalDiffTime)
-import GHC.Generics (Generic)
+import GHC.Generics (Generic, Generically (Generically))
 import Linear (V2 (V2))
 import Miso.CSS (Color)
 import Miso.CSS qualified as MS
@@ -95,12 +95,12 @@ data KeyAction
     | LevelUp
     | Pause
     | Reset
-    deriving (Eq, Ord, Show, Enum, Bounded, Generic)
-    deriving (Aeson.FromJSON, Aeson.ToJSON)
+    deriving stock (Eq, Ord, Show, Enum, Bounded, Generic)
+    deriving (Aeson.FromJSON, Aeson.ToJSON) via Generically KeyAction
     deriving (FromJSON, ToJSON) via (MisoAeson KeyAction)
 
 data Piece = O | I | S | Z | L | J | T
-    deriving (Eq, Ord, Show, Enum, Bounded, Generic)
+    deriving stock (Eq, Ord, Show, Enum, Bounded, Generic)
 instance Uniform Piece where uniformM = uniformEnumM
 
 -- inv: list has length 4, and its xs range from -1 to 2 (a single 2 for `I`), and ys from 0 to 1
@@ -120,7 +120,7 @@ data ActivePiece = ActivePiece
     , pos :: V2 Int
     , rotation :: Rotation
     }
-    deriving (Eq, Show, Generic)
+    deriving stock (Eq, Show, Generic)
 
 newPiece :: Piece -> ActivePiece
 newPiece piece = ActivePiece{piece, pos = V2 (opts.gridWidth `div` 2 - 1) 0, rotation = NoRotation}
@@ -132,7 +132,7 @@ data Rotation
     | Rotation90
     | Rotation180
     | Rotation270
-    deriving (Eq, Ord, Show, Enum, Bounded)
+    deriving stock (Eq, Ord, Show, Enum, Bounded)
 rotate :: Rotation -> V2 Int -> V2 Int
 rotate = flip \(V2 x y) -> \case
     NoRotation -> V2 x y
@@ -144,7 +144,7 @@ data Cell
     = Occupied Piece
     | Ghost Piece
     | Unoccupied
-    deriving (Eq, Ord, Show)
+    deriving stock (Eq, Ord, Show)
 
 -- inv: has width and height given by game opts, i.e.
 -- (0,0) is the top-left

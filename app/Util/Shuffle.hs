@@ -21,7 +21,7 @@ import System.Random.Stateful (StatefulGen, UniformRange (uniformRM), runStateGe
 data Tree a
     = Leaf !a
     | Node !Int !(Tree a) !(Tree a)
-    deriving (Show)
+    deriving stock (Show)
 
 -- Convert a sequence (e1...en) to a complete binary tree
 buildTree :: NonEmpty a -> Tree a

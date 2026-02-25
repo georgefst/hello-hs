@@ -20,7 +20,6 @@ executable georgefstris
     default-extensions:
         BlockArguments
         CPP
-        DeriveAnyClass
         DerivingVia
         DuplicateRecordFields
         LexicalNegation
@@ -34,6 +33,7 @@ executable georgefstris
         NoFieldSelectors
     ghc-options:
         -Wall
+        -Wmissing-deriving-strategies
     build-depends:
         base >=4.14,
         aeson,

@@ -11,7 +11,7 @@ import Data.Massiv.Array qualified as A
 import Prelude hiding (head)
 
 data Queue a = Queue {head :: Int, contents :: A.Array A.B A.Ix1 a}
-    deriving (Eq, Show)
+    deriving stock (Eq, Show)
 
 shift :: a -> Queue a -> (a, Queue a)
 shift x Queue{..} = (x', Queue{head = head', contents = contents'})

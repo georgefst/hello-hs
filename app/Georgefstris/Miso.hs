@@ -46,7 +46,7 @@ data Model = Model
     , gameOver :: Bool
     , lineCount :: Word
     }
-    deriving (Eq, Show, Generic)
+    deriving stock (Eq, Show, Generic)
 initialModel :: StdGen -> Level -> Model
 initialModel random0 level =
     Model
