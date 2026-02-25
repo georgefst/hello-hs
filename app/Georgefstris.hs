@@ -73,7 +73,7 @@ opts =
             32 -> Just HardDrop -- space bar
             173 -> Just LevelDown -- minus
             61 -> Just LevelUp -- plus
-            80 -> Just Pause -- p
+            27 -> Just Pause -- esc
             82 -> Just Reset -- r
             _ -> Nothing
         }
