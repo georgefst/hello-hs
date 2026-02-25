@@ -7,7 +7,6 @@ import Georgefstris (Opts (..), opts)
 import Georgefstris.Miso
 import Miso
 import System.Environment
-import System.Random.Stateful (globalStdGen, uniformM)
 
 {- FOURMOLU_DISABLE -}
 main :: IO ()
@@ -28,12 +27,12 @@ main = do
         =<< lookupStore foreignStoreId
     -- TODO this is a hack to ensure the stylesheet is reloaded on GHCI reload
     -- it's not about the HTTP cache - browsers don't even make a new request since the DOM element hasn't changed
-    -- and if this is our long-term solution, it should really be a counter or timestamp to avoid potential collisions
-    cacheBuster <- ms <$> uniformM @Word globalStdGen
-    -- TODO we should find some way to _not_ request a new stylesheet when it hasn't changed
-    -- one way would be if GHCIWatch could run different commands depending on what file triggered the reload
-    -- for now we can uncomment the line below, though that will only work from the second reload onwards
-    -- let cacheBuster = ""
+    -- we use content hashing in an attempt to ensure that we don't unnecessarily refetch and thus cause page flash
+    -- it even prevents the flash when the CSS returns to a state it was in previously, as that hash is cached
+    -- this does seem a bit fragile though, particularly with printing seemingly being needed to prevent the flash
+    -- anyway, it'd be better if the hashing were done server-side with ETags, but that makes browser mode more complex
+    cacheBuster <- ms <$> fetchCssHash
+    print cacheBuster
     -- TODO it'd be simpler if we could write to the store on unmount only, instead of every update
     -- and in theory more efficient, at least for huge models
     -- but the unmount action doesn't get run on reload
@@ -46,6 +45,20 @@ main = do
 
 {- FOURMOLU_DISABLE -}
 #ifdef WASM
+-- TODO we're hitting compiler errors using these, despite the first one being straight from the GHC users' guide
+-- possibly due to using Haskell.nix with the Wasm backend, and our associated hacks
+-- same behaviour with `JSString` swapped for `MisoString`
+-- so we implement a version with a hardcoded input string instead, and do the hashing in JS so we can just get an `Int`
+-- foreign import javascript safe "const r = await fetch($1); return r.text();" fetch' :: JSString -> IO JSString
+foreign import javascript safe
+  """
+  const r = await fetch('assets/style.css');
+  const buf = await r.arrayBuffer();
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  const view = new DataView(hash);
+  return view.getUint32(0);
+  """
+  fetchCssHash :: IO Word
 foreign export javascript "hs_start" main :: IO ()
 #endif
 {- FOURMOLU_ENABLE -}

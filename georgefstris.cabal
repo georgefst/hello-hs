@@ -23,6 +23,7 @@ executable georgefstris
         DerivingVia
         DuplicateRecordFields
         LexicalNegation
+        MultilineStrings
         OrPatterns
         OverloadedLabels
         OverloadedRecordDot
