@@ -25,6 +25,9 @@ body {
     &.game-over {
       filter: grayscale(75%) brightness(0.5);
     }
+    &.paused {
+      filter: brightness(0.3);
+    }
   }
 }
 

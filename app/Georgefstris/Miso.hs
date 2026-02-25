@@ -129,7 +129,7 @@ grid foreignStoreId m0 =
                 put $ initialModel (snd m.random) m.level
         )
         ( \Model{..} ->
-            gridCanvas opts.gridWidth opts.gridHeight (mwhen gameOver [class_ "game-over"]) \f ->
+            gridCanvas opts.gridWidth opts.gridHeight (mwhen gameOver [class_ "game-over"] <> mwhen paused [class_ "paused"]) \f ->
                 deconstructGrid
                     ( addPieceToGrid False current
                         . applyWhen
