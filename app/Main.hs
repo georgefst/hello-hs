@@ -12,6 +12,9 @@ import System.Random.Stateful (globalStdGen, uniformM)
 {- FOURMOLU_DISABLE -}
 main :: IO ()
 main = do
+    -- TODO the logic for hot reloading and stylesheet cache busting should in principle be behind `#ifdef INTERACTIVE`
+    -- but it doesn't do any real harm, and changing it would lose us HLS support
+    -- anyway, it's intended to be temporary while waiting for more principled upstream support
     random <- opts.random
     -- TODO hardcoding ID is said in docs to be "hideously unsafe"
     -- but we need to use the same one after reload somehow
