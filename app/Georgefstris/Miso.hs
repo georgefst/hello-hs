@@ -1,4 +1,4 @@
-module Georgefstris.Miso (app) where
+module Georgefstris.Miso (app, initialModel) where
 
 import Control.Monad
 import Control.Monad.Extra
@@ -17,6 +17,8 @@ import Data.Maybe
 import Data.Monoid.Extra
 import Data.Optics.Operators
 import Data.Set qualified as Set
+import Data.Word
+import Foreign.Store
 import GHC.Generics (Generic)
 import Georgefstris
 import Linear (R1 (_x), R2 (_y), V2 (V2))
@@ -86,11 +88,11 @@ gridCanvas w h attrs f = Canvas.canvas
 
 grid ::
     (HasType (FLQ.Queue Piece) parent, HasType Level parent, HasType Word parent) =>
-    Model -> Component parent Model Action
-grid m0 =
+    Word32 -> Model -> Component parent Model Action
+grid foreignStoreId m0 =
     ( component
         m0
-        ( \case
+        ( (>> (io_ . writeStore (Store foreignStoreId) =<< get)) . \case
             NoOp s -> io_ $ traverse_ consoleLog s
             Init -> subscribe keysPressedTopic KeyAction (const $ NoOp Nothing)
             Tick -> unlessM (use #paused) do
@@ -247,21 +249,19 @@ dummyKeyHandler keyTopic =
         { subs = [keyboardSub $ Right . IntSet.toList]
         }
 
-app :: StdGen -> Component parent (FLQ.Queue Piece, Level, Word) ()
-app random =
+app :: Word32 -> Model -> Component parent (FLQ.Queue Piece, Level, Word) MisoString
+app foreignStoreId m =
     component
         (m.next, m.level, m.lineCount)
-        (\() -> pure ())
+        (io_ . consoleLog)
         ( \_ ->
             div_
                 []
-                [ div_ [id_ "grid"] ["grid" +> grid m]
+                [ div_ [id_ "grid"] ["grid" +> grid foreignStoreId m]
                 , div_ [id_ "sidebar"] ["sidebar" +> sidebar (m.next, m.level, m.lineCount)]
                 , div_ [id_ "dummy-key-handler"] ["dummy-key-handler" +> dummyKeyHandler keysPressedTopic]
                 ]
         )
-  where
-    m = initialModel random 0
 
 keysPressedTopic :: Topic KeyAction
 keysPressedTopic = topic "keys-pressed"
