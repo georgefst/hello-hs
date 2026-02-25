@@ -2,7 +2,6 @@
 
 module Main (main) where
 
-import Data.Word
 import Foreign.Store
 import Georgefstris (Opts (..), opts)
 import Georgefstris.Miso
@@ -17,7 +16,7 @@ main = do
     -- TODO hardcoding ID is said in docs to be "hideously unsafe"
     -- but we need to use the same one after reload somehow
     -- use GHCIWatch hooks to run this on init instead?
-    let foreignStoreId = 0 :: Word32
+    let foreignStoreId = 0
     model <- maybe (pure $ initialModel random 0) readStore
         -- TODO find better way of allowing the developer to signal that old state should be thrown away (per component)
         -- uncomment this line to reset the state, without restarting REPL
