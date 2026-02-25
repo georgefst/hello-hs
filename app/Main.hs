@@ -20,7 +20,7 @@ main = do
     model <- maybe (pure $ initialModel random 0) readStore
         -- TODO find better way of allowing the developer to signal that old state should be thrown away (per component)
         -- uncomment this line to reset the state, without restarting REPL
-        -- =<< const (pure Nothing)
+        -- =<< (\x -> pure Nothing)
         -- TODO catch failures here, e.g. for when the model type has changed
         =<< lookupStore foreignStoreId
     -- TODO this is a hack to ensure the stylesheet is reloaded on GHCI reload
