@@ -7,6 +7,11 @@ source-repository-package
   --sha256: 1fw9gjjai60mvqa2qql1pk6k2s939z9izdmwdys3svhm6klrbc3w
 source-repository-package
   type: git
+  location: https://github.com/haskell-miso/miso-optics
+  tag: c8709bb0dc0f09f89d7ca5f66112bc0bf3106d5a
+  --sha256: 0f30hb07rdbk2v0xzzavfg4h27apls80sh1vz9nl5l2qh2368xbs
+source-repository-package
+  type: git
   location: https://github.com/haskell-miso/miso-aeson
   tag: d491d91b3437a43dd4410a716ee9d4531b6cf309
   --sha256: VvCMbZBewybVu1daBGb9PCv5YVCmy0cUIQA2yFW+wEY=

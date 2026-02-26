@@ -46,6 +46,7 @@ executable georgefstris
         linear,
         massiv,
         miso-aeson,
+        miso-optics,
         miso,
         mtl,
         optics-operators,

@@ -27,13 +27,13 @@ import Miso.CSS qualified as MS
 import Miso.Canvas qualified as Canvas
 import Miso.Html
 import Miso.Html.Property hiding (for_)
+import Miso.Optics
 import Optics hiding (uncons)
 import Optics.State.Operators
 import Safe (predDef, predSafe, succDef)
 import System.Random.Stateful hiding (next, random)
 import Util
 import Util.FixedLengthQueue qualified as FLQ
-import Util.MisoOptics
 
 data Model = Model
     { pile :: Grid -- the cells fixed in place
