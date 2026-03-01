@@ -59,13 +59,13 @@ opts =
         , tickLength = 0.05
         , rate = \l -> fromIntegral $ topLevel + 1 - clamp (startLevel, topLevel) l
         , colours = \case
-            O -> hsl' 0 62 51
-            I -> hsl' 28 77 57
+            O -> hsl' 0 62 54
+            I -> hsl' 29 73 58
             S -> hsl' 203 72 75
-            Z -> hsl' 144 34 46
+            Z -> hsl' 147 34 49
             L -> hsl' 217 72 56
-            J -> hsl' 281 36 55
-            T -> hsl' 50 85 60
+            J -> hsl' 275 37 60
+            T -> hsl' 46 98 63
         , keymap = \case
             37 -> Just MoveLeft -- left arrow
             39 -> Just MoveRight -- right arrow
