@@ -5,6 +5,8 @@ import Control.Monad.State.Strict
 import Data.Aeson qualified as Aeson
 import Data.Bifunctor (second)
 import Data.Bool
+import Data.Colour.RGBSpace
+import Data.Colour.RGBSpace.HSL
 import Data.Either.Extra
 import Data.Foldable
 import Data.List.Extra
@@ -57,13 +59,13 @@ opts =
         , tickLength = 0.05
         , rate = \l -> fromIntegral $ topLevel + 1 - clamp (startLevel, topLevel) l
         , colours = \case
-            O -> MS.rgb 208 53 53
-            I -> MS.rgb 230 138 60
-            S -> MS.rgb 144 201 237
-            Z -> MS.rgb 78 158 110
-            L -> MS.rgb 63 124 224
-            J -> MS.rgb 156 99 182
-            T -> MS.rgb 240 210 67
+            O -> hsl' 0 62 51
+            I -> hsl' 28 77 57
+            S -> hsl' 203 72 75
+            Z -> hsl' 144 34 46
+            L -> hsl' 217 72 56
+            J -> hsl' 281 36 55
+            T -> hsl' 50 85 60
         , keymap = \case
             37 -> Just MoveLeft -- left arrow
             39 -> Just MoveRight -- right arrow
@@ -80,6 +82,10 @@ opts =
   where
     startLevel = Level 1
     topLevel = Level 10
+
+-- TODO work out why Miso's `hsl` always just produces black on canvas
+hsl' :: Double -> Double -> Double -> Color
+hsl' h s l = uncurryRGB MS.rgb $ fmap (floor @Double . (* 255)) $ hsl h (s / 100) (l / 100)
 
 newtype Level = Level Word
     deriving newtype (Eq, Ord, Show, Enum, Bounded, Num, Real, Integral, ToMisoString)
