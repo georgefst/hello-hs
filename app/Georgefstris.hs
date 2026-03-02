@@ -36,7 +36,6 @@ data Opts = Opts
     , randomiser :: State StdGen (NonEmpty Piece)
     , topLevel :: Level
     , keyDelays :: KeyAction -> Maybe (NominalDiffTime, NominalDiffTime)
-    , tickLength :: NominalDiffTime
     , rate :: Level -> NominalDiffTime
     , colours :: Piece -> Color
     , keymap :: Int -> Maybe KeyAction
@@ -55,8 +54,7 @@ opts =
         , keyDelays = \case
             RotateLeft; RotateRight; HardDrop; Pause; Reset -> Nothing
             MoveLeft; MoveRight; SoftDrop; LevelDown; LevelUp -> Just (0.12, 0.02)
-        , tickLength
-        , rate = \(realToFrac @_ @Double -> l) -> (1 / tickLength) * realToFrac ((0.8 - ((l - 1) * 0.007)) ** (l - 1))
+        , rate = \(realToFrac @_ @Double -> l) -> realToFrac ((0.8 - ((l - 1) * 0.007)) ** (l - 1))
         , colours = \case
             O -> hsl' 0 62 54
             I -> hsl' 29 73 58
@@ -79,7 +77,6 @@ opts =
             _ -> Nothing
         }
   where
-    tickLength = 1 / 60
     topLevel = Level 20
 
 -- TODO work out why Miso's `hsl` always just produces black on canvas

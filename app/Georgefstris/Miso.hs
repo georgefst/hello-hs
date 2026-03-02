@@ -1,4 +1,4 @@
-module Georgefstris.Miso (app, initialModel) where
+module Georgefstris.Miso (app, Model (..), initialModel) where
 
 import Control.Monad
 import Control.Monad.Extra
@@ -10,6 +10,7 @@ import Data.Foldable
 import Data.Foldable1 qualified as NE
 import Data.Function
 import Data.Generics.Product
+import Data.IORef
 import Data.IntSet qualified as IntSet
 import Data.Map (Map)
 import Data.Map qualified as Map
@@ -17,7 +18,6 @@ import Data.Maybe
 import Data.Monoid.Extra
 import Data.Optics.Operators
 import Data.Set qualified as Set
-import Data.Time (NominalDiffTime)
 import Data.Word
 import Foreign.Store
 import GHC.Generics (Generic)
@@ -40,7 +40,6 @@ data Model = Model
     { pile :: Grid -- the cells fixed in place
     , current :: ActivePiece
     , next :: FLQ.Queue Piece
-    , ticks :: NominalDiffTime
     , paused :: Bool
     , level :: Level
     , random :: ([Piece], StdGen)
@@ -52,7 +51,6 @@ initialModel :: StdGen -> Level -> Model
 initialModel random0 level =
     Model
         { pile = emptyGrid
-        , ticks = 0
         , level
         , gameOver = False
         , lineCount = 0
@@ -89,22 +87,16 @@ gridCanvas w h attrs f = Canvas.canvas
 
 grid ::
     (HasType (FLQ.Queue Piece) parent, HasType Level parent, HasType Word parent) =>
-    Word32 -> Model -> Component parent Model Action
-grid foreignStoreId m0 =
+    Word32 -> IORef Level -> Model -> Component parent Model Action
+grid foreignStoreId levelRef m0 =
     ( component
         m0
         ( (>> (io_ . writeStore (Store foreignStoreId) =<< get)) . \case
             NoOp s -> io_ $ traverse_ consoleLog s
             Init -> subscribe keysPressedTopic KeyAction (const $ NoOp Nothing)
             Tick -> unlessM (use #paused) do
-                level <- use #level
-                relevantTick <-
-                    #ticks %%= \t ->
-                        let t' = t + 1
-                            b = t' >= opts.rate level
-                         in (b, if b then t' - opts.rate level else t')
                 notOver <- not <$> use #gameOver
-                when (relevantTick && notOver) do
+                when notOver do
                     success <- tryMove (+ V2 0 1)
                     when (not success) do
                         fixPiece
@@ -122,8 +114,8 @@ grid foreignStoreId m0 =
                 L; J; T -> predDef maxBound
             KeyAction SoftDrop -> void $ tryMove (+ V2 0 1)
             KeyAction HardDrop -> whileM (tryMove (+ V2 0 1)) >> fixPiece
-            KeyAction LevelDown -> #level %= max 1 . predDef 1
-            KeyAction LevelUp -> #level %= min opts.topLevel . succDef opts.topLevel
+            KeyAction LevelDown -> setLevel $ max 1 . predDef 1
+            KeyAction LevelUp -> setLevel $ min opts.topLevel . succDef opts.topLevel
             KeyAction Pause -> #paused %= not
             KeyAction Reset -> do
                 m <- get
@@ -152,8 +144,12 @@ grid foreignStoreId m0 =
     )
         { subs =
             [ \sink -> forever do
+                -- TODO ideally subs would have some simple way of safely accessing model state
+                -- perhaps we could do this with a subcomponent? not sure even that is possible
+                -- unless we mounted a new component every time the level changes
+                level <- readIORef levelRef
                 sink Tick
-                threadDelay' opts.tickLength
+                threadDelay' $ opts.rate level
             ]
         , mount = Just Init
         , bindings =
@@ -163,6 +159,10 @@ grid foreignStoreId m0 =
             ]
         }
   where
+    setLevel f = do
+        #level %= f
+        l <- use #level
+        io_ $ writeIORef levelRef l
     fixPiece = do
         Model{current, next} <- get
         #pile %= addPieceToGrid False current
@@ -256,15 +256,15 @@ dummyKeyHandler keyTopic =
         { subs = [keyboardSub $ Right . IntSet.toList]
         }
 
-app :: Word32 -> Model -> Component parent (FLQ.Queue Piece, Level, Word) MisoString
-app foreignStoreId m =
+app :: Word32 -> IORef Level -> Model -> Component parent (FLQ.Queue Piece, Level, Word) MisoString
+app foreignStoreId levelRef m =
     component
         (m.next, m.level, m.lineCount)
         (io_ . consoleLog)
         ( \_ ->
             div_
                 []
-                [ div_ [id_ "grid"] ["grid" +> grid foreignStoreId m]
+                [ div_ [id_ "grid"] ["grid" +> grid foreignStoreId levelRef m]
                 , div_ [id_ "sidebar"] ["sidebar" +> sidebar (m.next, m.level, m.lineCount)]
                 , div_ [id_ "dummy-key-handler"] ["dummy-key-handler" +> dummyKeyHandler keysPressedTopic]
                 ]
