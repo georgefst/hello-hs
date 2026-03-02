@@ -56,7 +56,7 @@ opts =
             RotateLeft; RotateRight; HardDrop; Pause; Reset -> Nothing
             MoveLeft; MoveRight; SoftDrop; LevelDown; LevelUp -> Just (0.12, 0.02)
         , tickLength
-        , rate = \(fromIntegral -> l) -> realToFrac @Double $ (1 / realToFrac tickLength) * ((0.8 - ((l - 1) * 0.007)) ** (l - 1))
+        , rate = \(realToFrac @_ @Double -> l) -> (1 / tickLength) * realToFrac ((0.8 - ((l - 1) * 0.007)) ** (l - 1))
         , colours = \case
             O -> hsl' 0 62 54
             I -> hsl' 29 73 58
