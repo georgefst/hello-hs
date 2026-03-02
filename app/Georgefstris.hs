@@ -57,7 +57,7 @@ opts =
             RotateLeft; RotateRight; HardDrop; Pause; Reset -> Nothing
             MoveLeft; MoveRight; SoftDrop; LevelDown; LevelUp -> Just (0.12, 0.02)
         , tickLength = 0.05
-        , rate = \l -> fromIntegral $ topLevel + 1 - clamp (startLevel, topLevel) (l - 1)
+        , rate = fromIntegral . (topLevel + 1 -) . clamp (1, topLevel) . (- 1)
         , colours = \case
             O -> hsl' 0 62 54
             I -> hsl' 29 73 58
@@ -80,7 +80,6 @@ opts =
             _ -> Nothing
         }
   where
-    startLevel = Level 1
     topLevel = Level 10
 
 -- TODO work out why Miso's `hsl` always just produces black on canvas
