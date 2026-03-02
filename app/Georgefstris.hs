@@ -57,7 +57,7 @@ opts =
             RotateLeft; RotateRight; HardDrop; Pause; Reset -> Nothing
             MoveLeft; MoveRight; SoftDrop; LevelDown; LevelUp -> Just (0.12, 0.02)
         , tickLength = 0.05
-        , rate = \l -> fromIntegral $ topLevel + 1 - clamp (startLevel, topLevel) l
+        , rate = \l -> fromIntegral $ topLevel + 1 - clamp (startLevel, topLevel) (l - 1)
         , colours = \case
             O -> hsl' 0 62 54
             I -> hsl' 29 73 58

@@ -30,7 +30,7 @@ import Miso.Html.Property hiding (for_)
 import Miso.Optics
 import Optics hiding (uncons)
 import Optics.State.Operators
-import Safe (predDef, predSafe, succDef)
+import Safe (predDef, succDef)
 import System.Random.Stateful hiding (next, random)
 import Util
 import Util.FixedLengthQueue qualified as FLQ
@@ -121,7 +121,7 @@ grid foreignStoreId m0 =
                 L; J; T -> predDef maxBound
             KeyAction SoftDrop -> void $ tryMove (+ V2 0 1)
             KeyAction HardDrop -> whileM (tryMove (+ V2 0 1)) >> fixPiece
-            KeyAction LevelDown -> #level %= predSafe
+            KeyAction LevelDown -> #level %= max 1 . predDef 1
             KeyAction LevelUp -> #level %= min opts.topLevel . succDef opts.topLevel
             KeyAction Pause -> #paused %= not
             KeyAction Reset -> do

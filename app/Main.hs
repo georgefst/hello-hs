@@ -19,7 +19,7 @@ main = do
     -- but we need to use the same one after reload somehow
     -- use GHCIWatch hooks to run this on init instead?
     let foreignStoreId = 0
-    model <- maybe (pure $ initialModel random 0) readStore
+    model <- maybe (pure $ initialModel random 1) readStore
         -- TODO find better way of allowing the developer to signal that old state should be thrown away (per component)
         -- uncomment this line to reset the state, without restarting REPL
         -- =<< (\x -> pure Nothing)
