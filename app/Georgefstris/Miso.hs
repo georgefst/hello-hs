@@ -160,9 +160,9 @@ grid foreignStoreId levelRef m0 =
         }
   where
     setLevel f = do
-        #level %= f
-        l <- use #level
-        io_ $ writeIORef levelRef l
+        l1 <- f <$> use #level
+        #level .= l1
+        io_ $ writeIORef levelRef l1
     fixPiece = do
         Model{current, next} <- get
         #pile %= addPieceToGrid False current
