@@ -17,6 +17,7 @@ import Data.Maybe
 import Data.Monoid.Extra
 import Data.Optics.Operators
 import Data.Set qualified as Set
+import Data.Time (NominalDiffTime)
 import Data.Word
 import Foreign.Store
 import GHC.Generics (Generic)
@@ -39,7 +40,7 @@ data Model = Model
     { pile :: Grid -- the cells fixed in place
     , current :: ActivePiece
     , next :: FLQ.Queue Piece
-    , ticks :: Word
+    , ticks :: NominalDiffTime
     , paused :: Bool
     , level :: Level
     , random :: ([Piece], StdGen)
@@ -101,7 +102,7 @@ grid foreignStoreId m0 =
                     #ticks %%= \t ->
                         let t' = t + 1
                             b = t' >= opts.rate level
-                         in (b, if b then 0 else t')
+                         in (b, if b then t' - opts.rate level else t')
                 notOver <- not <$> use #gameOver
                 when (relevantTick && notOver) do
                     success <- tryMove (+ V2 0 1)

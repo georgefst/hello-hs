@@ -15,7 +15,6 @@ import Data.Massiv.Array (Array)
 import Data.Massiv.Array qualified as A
 import Data.Maybe
 import Data.Monoid.Extra
-import Data.Ord (clamp)
 import Data.Time (NominalDiffTime)
 import GHC.Generics (Generic, Generically (Generically))
 import Linear (V2 (V2))
@@ -38,7 +37,7 @@ data Opts = Opts
     , topLevel :: Level
     , keyDelays :: KeyAction -> Maybe (NominalDiffTime, NominalDiffTime)
     , tickLength :: NominalDiffTime
-    , rate :: Level -> Word
+    , rate :: Level -> NominalDiffTime
     , colours :: Piece -> Color
     , keymap :: Int -> Maybe KeyAction
     }
@@ -56,8 +55,8 @@ opts =
         , keyDelays = \case
             RotateLeft; RotateRight; HardDrop; Pause; Reset -> Nothing
             MoveLeft; MoveRight; SoftDrop; LevelDown; LevelUp -> Just (0.12, 0.02)
-        , tickLength = 0.05
-        , rate = fromIntegral . (topLevel + 1 -) . clamp (1, topLevel) . (- 1)
+        , tickLength
+        , rate = \(fromIntegral -> l) -> realToFrac @Double $ (1 / realToFrac tickLength) * ((0.8 - ((l - 1) * 0.007)) ** (l - 1))
         , colours = \case
             O -> hsl' 0 62 54
             I -> hsl' 29 73 58
@@ -80,7 +79,8 @@ opts =
             _ -> Nothing
         }
   where
-    topLevel = Level 10
+    tickLength = 1 / 60
+    topLevel = Level 20
 
 -- TODO work out why Miso's `hsl` always just produces black on canvas
 hsl' :: Double -> Double -> Double -> Color
