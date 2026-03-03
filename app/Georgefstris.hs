@@ -53,7 +53,7 @@ opts =
         , topLevel
         , keyDelays = \case
             RotateLeft; RotateRight; HardDrop; Pause; Reset -> Nothing
-            MoveLeft; MoveRight; SoftDrop; LevelDown; LevelUp -> Just (0.12, 0.02)
+            MoveLeft; MoveRight; SoftDrop; LevelDown; LevelUp -> Just (0.11, 0.022)
         , rate = \(fromIntegral . pred -> l) -> realToFrac @Double $ (0.8 - 0.007 * l) ** l
         , colours = \case
             O -> hsl' 0 62 54
