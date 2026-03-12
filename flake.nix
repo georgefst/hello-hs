@@ -15,7 +15,7 @@
                 ghc9141 = prev.haskell-nix.compiler.ghc9141.override {
                   ghc-patches = prev.haskell-nix.compiler.ghc9141.patches
                     ++ final.lib.optionals final.stdenv.targetPlatform.isWasm [
-                    ./wasm-browser-mode-assets.patch
+                    ./ghc-wasm-patches/assets.patch
                   ];
                 };
               };
