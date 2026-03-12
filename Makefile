@@ -2,6 +2,7 @@ repl:
 	wasm32-unknown-wasi-cabal repl hello-hs -finteractive
 
 watch:
+	GHCI_BROWSER_OPEN_CMD=xdg-open \
 	ghciwatch --after-startup-ghci :main --after-reload-ghci :main --watch app --debounce 50ms \
 		--command \
 		'wasm32-unknown-wasi-cabal repl hello-hs -finteractive \
