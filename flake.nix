@@ -14,9 +14,9 @@
               compiler = prev.haskell-nix.compiler // {
                 ghc9141 = prev.haskell-nix.compiler.ghc9141.override {
                   ghc-patches = prev.haskell-nix.compiler.ghc9141.patches
-                    ++ final.lib.optionals final.stdenv.targetPlatform.isWasm [
-                    ./ghc-wasm-patches/assets.patch
-                  ];
+                    ++ final.lib.optionals final.stdenv.targetPlatform.isWasm (
+                    final.lib.filesystem.listFilesRecursive ./ghc-wasm-patches
+                  );
                 };
               };
             };
