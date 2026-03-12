@@ -20,9 +20,7 @@ data Action
   deriving (Show, Eq)
 -----------------------------------------------------------------------------
 #ifdef WASM
-#ifndef INTERACTIVE
 foreign export javascript "hs_start" main :: IO ()
-#endif
 #endif
 -----------------------------------------------------------------------------
 main :: IO ()
