@@ -34,8 +34,6 @@ executable hello-hs
     if arch(wasm32)
         ghc-options:
             -no-hs-main -optl-mexec-model=reactor "-optl-Wl,--export=hs_start"
-        cpp-options:
-            -DWASM
     else
         ghc-options:
             -threaded

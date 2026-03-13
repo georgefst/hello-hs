@@ -20,7 +20,7 @@ data Action
   | SayHelloWorld
   deriving (Show, Eq)
 -----------------------------------------------------------------------------
-#ifdef WASM
+#ifdef wasi_HOST_OS
 foreign export javascript "hs_start" main :: IO ()
 #endif
 -----------------------------------------------------------------------------
