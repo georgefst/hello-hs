@@ -237,23 +237,6 @@
         "type": "github"
       }
     },
-    "hls-2-13": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1773405948,
-        "narHash": "sha256-vpKp4FCLX1iqwkYmG8LUzl/nNp6NImIQoSzidoHiDxY=",
-        "owner": "haskell",
-        "repo": "haskell-language-server",
-        "rev": "097f510cfc9ea045668ec0958c612822e6640654",
-        "type": "github"
-      },
-      "original": {
-        "owner": "haskell",
-        "ref": "fourmolu-ghc-9.14",
-        "repo": "haskell-language-server",
-        "type": "github"
-      }
-    },
     "hls-2.0": {
       "flake": false,
       "locked": {
@@ -458,6 +441,23 @@
         "type": "github"
       }
     },
+    "hls_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1773405948,
+        "narHash": "sha256-vpKp4FCLX1iqwkYmG8LUzl/nNp6NImIQoSzidoHiDxY=",
+        "owner": "haskell",
+        "repo": "haskell-language-server",
+        "rev": "097f510cfc9ea045668ec0958c612822e6640654",
+        "type": "github"
+      },
+      "original": {
+        "owner": "haskell",
+        "ref": "fourmolu-ghc-9.14",
+        "repo": "haskell-language-server",
+        "type": "github"
+      }
+    },
     "hpc-coveralls": {
       "flake": false,
       "locked": {
@@ -624,7 +624,7 @@
       "inputs": {
         "flake-utils": "flake-utils",
         "haskell-nix": "haskell-nix",
-        "hls-2-13": "hls-2-13",
+        "hls": "hls_2",
         "nixpkgs": [
           "haskell-nix",
           "nixpkgs-2511"
