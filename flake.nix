@@ -3,7 +3,7 @@
   inputs.haskell-nix.url = "github:input-output-hk/haskell.nix";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-2511";
   inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.hls-2-13 = { url = "github:haskell/haskell-language-server/2.13.0.0"; flake = false; };
+  inputs.hls = { url = "github:haskell/haskell-language-server/fourmolu-ghc-9.14"; flake = false; };
   outputs = inputs@{ self, nixpkgs, flake-utils, haskell-nix, ... }:
     flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-darwin" ] (system:
       let
@@ -64,10 +64,14 @@
                   ];
                 shell.tools.cabal = "latest";
                 shell.tools.haskell-language-server = {
-                  src = inputs.hls-2-13;
-                  sha256map = {
-                    "https://github.com/snowleopard/alga"."d4e43fb42db05413459fb2df493361d5a666588a" = "0s1mlnl64wj7pkg3iipv5bb4syy3bhxwqzqv93zqlvkyfn64015i";
-                  };
+                  src = inputs.hls;
+                  cabalProjectLocal = ''
+                    source-repository-package
+                      type: git
+                      location: https://github.com/fourmolu/fourmolu.git
+                      tag: 34dc872445f993f80780f8b37f3a69f8278fe540
+                      --sha256: 0ljp9g0kq1skwdf1d8hisnwr8nmls03ailv5zb8mk6whdap6nala
+                  '';
                 };
                 shell.withHoogle = false;
                 shell.shellHook =
