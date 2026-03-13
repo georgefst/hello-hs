@@ -34,7 +34,7 @@ main = startApp defaultEvents app
 -----------------------------------------------------------------------------
 app :: App Int Action
 app = (component 0 updateModel viewModel)
-  { styles = [ Sheet sheet ]
+  { styles = [ Sheet sheet, Href "style.css" ]
   }
 -----------------------------------------------------------------------------
 updateModel :: Action -> Effect parent Int Action
@@ -81,8 +81,6 @@ sheet =
     , "--primary-hover" =: "#3451d1"
     , "--secondary-color" =: "#ff4a6b"
     , "--secondary-hover" =: "#d13451"
-    , "--background" =: "#f7f9fc"
-    , "--text-color" =: "#333"
     , "--shadow" =: "0 4px 10px rgba(0, 0, 0, 0.1);"
     , "--transition" =: "all 0.3s ease;"
     ]
