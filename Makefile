@@ -1,11 +1,11 @@
 repl:
-	wasm32-unknown-wasi-cabal repl hello-hs -finteractive
+	wasm32-unknown-wasi-cabal repl hello-hs
 
 watch:
 	GHCI_BROWSER_OPEN_CMD=xdg-open \
 	ghciwatch --after-startup-ghci :main --after-reload-ghci :main --watch app --debounce 50ms \
 		--command \
-		'wasm32-unknown-wasi-cabal repl hello-hs -finteractive \
+		'wasm32-unknown-wasi-cabal repl hello-hs \
 		--repl-options="-ignore-dot-ghci -fghci-browser -fghci-browser-port=8080 -fghci-browser-assets-dir=static"'
 
 build:
