@@ -12,6 +12,7 @@ import           Miso.Html.Property as P
 import           Miso.Lens
 import qualified Miso.CSS as CSS
 import           Miso.CSS (StyleSheet)
+import           System.Environment
 -----------------------------------------------------------------------------
 data Action
   = AddOne
@@ -24,11 +25,9 @@ foreign export javascript "hs_start" main :: IO ()
 #endif
 -----------------------------------------------------------------------------
 main :: IO ()
-#ifdef INTERACTIVE
-main = reload (startApp defaultEvents app)
-#else
-main = startApp defaultEvents app
-#endif
+main = getProgName >>= \case
+  "<interactive>" -> reload $ startApp defaultEvents app
+  _ -> startApp defaultEvents app
 -----------------------------------------------------------------------------
 app :: App Int Action
 app = (component 0 updateModel viewModel)
