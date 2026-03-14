@@ -4,6 +4,8 @@
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-2511";
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.hls = { url = "github:haskell/haskell-language-server/fourmolu-ghc-9.14"; flake = false; };
+  inputs.browser-wasi-shim = { url = "https://registry.npmjs.org/@bjorn3/browser_wasi_shim/-/browser_wasi_shim-0.3.0.tgz"; flake = false; };
+  inputs.ws = { url = "https://registry.npmjs.org/ws/-/ws-8.18.0.tgz"; flake = false; };
   outputs = inputs@{ self, nixpkgs, flake-utils, haskell-nix, ... }:
     flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-darwin" ] (system:
       let
@@ -82,34 +84,11 @@
                 shell.withHoogle = false;
                 shell.shellHook =
                   let
-                    browser_wasi_shim = pkgs.stdenv.mkDerivation {
-                      pname = "browser_wasi_shim";
-                      version = "0.3.0";
-                      src = pkgs.fetchurl {
-                        url = "https://registry.npmjs.org/@bjorn3/browser_wasi_shim/-/browser_wasi_shim-0.3.0.tgz";
-                        hash = "sha256-JByWcW2oRXnhBFRG9Pdvr2N7l7GYPtfp5ZC3Fmemwbc=";
-                      };
-                      installPhase = ''
-                        mkdir -p $out
-                        cp -r dist $out/dist
-                      '';
-                    };
-                    ws = pkgs.stdenv.mkDerivation {
-                      pname = "ws";
-                      version = "8.18.0";
-                      src = pkgs.fetchurl {
-                        url = "https://registry.npmjs.org/ws/-/ws-8.18.0.tgz";
-                        hash = "sha256-oIIh8oUUcslEygF42JqYiMf0P72ZmK/Ip+xv5BfEyiA=";
-                      };
-                      installPhase = ''
-                        mkdir -p $out/lib/node_modules/ws
-                        cp -r . $out/lib/node_modules/ws
-                      '';
-                    };
+                    node_modules = pkgs.linkFarm "node_modules" [{ name = "ws"; path = inputs.ws; }];
                   in
                   ''
-                    export BROWSER_WASI_SHIM="${browser_wasi_shim}"
-                    export NODE_PATH="${ws}/lib/node_modules''${NODE_PATH:+:$NODE_PATH}"
+                    export BROWSER_WASI_SHIM="${inputs.browser-wasi-shim}"
+                    export NODE_PATH="${node_modules}''${NODE_PATH:+:$NODE_PATH}"
                   '';
               };
           })
