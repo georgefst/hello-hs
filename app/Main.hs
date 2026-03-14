@@ -9,7 +9,6 @@ import Georgefstris.Miso
 import Miso
 import System.Environment
 
-{- FOURMOLU_DISABLE -}
 main :: IO ()
 main = do
     -- TODO the logic for hot reloading and stylesheet cache busting should in principle be behind `#ifdef INTERACTIVE`
@@ -20,12 +19,13 @@ main = do
     -- but we need to use the same one after reload somehow
     -- use GHCIWatch hooks to run this on init instead?
     let foreignStoreId = 0
-    model <- maybe (pure $ initialModel random 1) readStore
-        -- TODO find better way of allowing the developer to signal that old state should be thrown away (per component)
-        -- uncomment this line to reset the state, without restarting REPL
-        -- =<< (\x -> pure Nothing)
-        -- TODO catch failures here, e.g. for when the model type has changed
-        =<< lookupStore foreignStoreId
+    model <-
+        maybe (pure $ initialModel random 1) readStore
+            -- TODO find better way of allowing the developer to signal that old state should be thrown away (per component)
+            -- uncomment this line to reset the state, without restarting REPL
+            -- =<< (\x -> pure Nothing)
+            -- TODO catch failures here, e.g. for when the model type has changed
+            =<< lookupStore foreignStoreId
     -- TODO this is a hack to ensure the stylesheet is reloaded on GHCI reload
     -- it's not about the HTTP cache - browsers don't even make a new request since the DOM element hasn't changed
     -- we use content hashing in an attempt to ensure that we don't unnecessarily refetch and thus cause page flash
@@ -43,7 +43,6 @@ main = do
     getProgName >>= \case
         "<interactive>" -> reload a
         _ -> a
-{- FOURMOLU_ENABLE -}
 
 {- FOURMOLU_DISABLE -}
 #ifdef WASM
