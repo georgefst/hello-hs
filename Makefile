@@ -14,6 +14,7 @@ build:
 	cp -r static dist
 	mkdir dist/assets
 	mv dist/*.css dist/assets
+	cp -r --no-preserve=mode $(BROWSER_WASI_SHIM)/dist dist/browser_wasi_shim
 	$(eval my_wasm=$(shell wasm32-unknown-wasi-cabal list-bin hello-hs))
 	$(shell wasm32-unknown-wasi-ghc --print-libdir)/post-link.mjs --input $(my_wasm) --output dist/ghc_wasm_jsffi.js
 	cp -v $(my_wasm) dist/app.wasm

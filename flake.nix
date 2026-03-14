@@ -78,6 +78,18 @@
                 shell.withHoogle = false;
                 shell.shellHook =
                   let
+                    browser_wasi_shim = pkgs.stdenv.mkDerivation {
+                      pname = "browser_wasi_shim";
+                      version = "0.3.0";
+                      src = pkgs.fetchurl {
+                        url = "https://registry.npmjs.org/@bjorn3/browser_wasi_shim/-/browser_wasi_shim-0.3.0.tgz";
+                        hash = "sha256-JByWcW2oRXnhBFRG9Pdvr2N7l7GYPtfp5ZC3Fmemwbc=";
+                      };
+                      installPhase = ''
+                        mkdir -p $out
+                        cp -r dist $out/dist
+                      '';
+                    };
                     ws = pkgs.stdenv.mkDerivation {
                       pname = "ws";
                       version = "8.18.0";
@@ -92,6 +104,7 @@
                     };
                   in
                   ''
+                    export BROWSER_WASI_SHIM="${browser_wasi_shim}"
                     export NODE_PATH="${ws}/lib/node_modules''${NODE_PATH:+:$NODE_PATH}"
                   '';
               };
