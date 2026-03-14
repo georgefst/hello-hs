@@ -1,4 +1,4 @@
-import * as browser_wasi_shim from "https://cdn.jsdelivr.net/npm/@bjorn3/browser_wasi_shim@0.3.0/dist/index.js";
+import * as browser_wasi_shim from "./browser_wasi_shim/index.js";
 import ghc_wasm_jsffi from "./ghc_wasm_jsffi.js";
 
 const wasi = new browser_wasi_shim.WASI(
