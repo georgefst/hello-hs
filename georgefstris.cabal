@@ -1,0 +1,61 @@
+cabal-version: 3.0
+name: georgefstris
+version: 0.1.0.0
+license-file: LICENSE
+author: George Thomas
+maintainer: georgefsthomas@gmail.com
+
+executable georgefstris
+    main-is: Main.hs
+    hs-source-dirs: app
+    other-modules:
+        Georgefstris
+        Georgefstris.Miso
+        Util
+        Util.FixedLengthQueue
+        Util.MisoAesonDeriving
+        Util.MisoOptics
+        Util.Shuffle
+    default-language: GHC2024
+    default-extensions:
+        BlockArguments
+        CPP
+        DerivingVia
+        DuplicateRecordFields
+        LexicalNegation
+        MultilineStrings
+        OrPatterns
+        OverloadedLabels
+        OverloadedRecordDot
+        PartialTypeSignatures
+        OverloadedStrings
+        RecordWildCards
+        ViewPatterns
+        NoFieldSelectors
+    ghc-options:
+        -Wall
+        -Wmissing-deriving-strategies
+    build-depends:
+        base >=4.14,
+        aeson,
+        colour,
+        containers,
+        extra,
+        foreign-store,
+        generic-optics,
+        linear,
+        massiv,
+        miso-aeson,
+        miso-optics,
+        miso,
+        mtl,
+        optics-operators,
+        optics,
+        random,
+        safe,
+        text,
+        time,
+        unordered-containers,
+    if os(wasi)
+        ghc-options:
+            -no-hs-main -optl-mexec-model=reactor

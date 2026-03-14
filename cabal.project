@@ -3,8 +3,13 @@ packages: .
 source-repository-package
   type: git
   location: https://github.com/dmjio/miso
-  tag: e5871007c474048e6ff68657249f0ed9073d774f
-  --sha256: k70wvAKqw0txmazfwB/FU8MvjjzyWcXX9n6VNDbUN+c=
+  tag: 5d891174da73325d67a487f9cedf82a83e74dac5
+  --sha256: SurhrziT+r+TUeT0U0UsrHQJ2rHeClSTVKOWGDJYsPY=
+source-repository-package
+  type: git
+  location: https://github.com/haskell-miso/miso-optics
+  tag: c8709bb0dc0f09f89d7ca5f66112bc0bf3106d5a
+  --sha256: 0f30hb07rdbk2v0xzzavfg4h27apls80sh1vz9nl5l2qh2368xbs
 source-repository-package
   type: git
   location: https://github.com/haskell-miso/miso-aeson

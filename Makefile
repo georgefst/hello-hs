@@ -1,11 +1,12 @@
 repl:
-	wasm32-unknown-wasi-cabal repl hello-hs
+	wasm32-unknown-wasi-cabal repl georgefstris
 
 watch:
 	GHCI_BROWSER_OPEN_CMD=xdg-open \
 	ghciwatch --after-startup-ghci :main --after-reload-ghci :main --watch app --debounce 50ms \
+		--watch static --reload-glob '*.css' \
 		--command \
-		'wasm32-unknown-wasi-cabal repl hello-hs \
+		'wasm32-unknown-wasi-cabal repl georgefstris \
 		--repl-options="-ignore-dot-ghci -fghci-browser -fghci-browser-port=8080 -fghci-browser-assets-dir=static"'
 
 build:
@@ -15,7 +16,7 @@ build:
 	mkdir dist/assets
 	mv dist/*.css dist/assets
 	cp -r --no-preserve=mode $(BROWSER_WASI_SHIM)/dist dist/browser_wasi_shim
-	$(eval my_wasm=$(shell wasm32-unknown-wasi-cabal list-bin hello-hs))
+	$(eval my_wasm=$(shell wasm32-unknown-wasi-cabal list-bin georgefstris))
 	$(shell wasm32-unknown-wasi-ghc --print-libdir)/post-link.mjs --input $(my_wasm) --output dist/ghc_wasm_jsffi.js
 	cp -v $(my_wasm) dist/app.wasm
 
