@@ -18,6 +18,6 @@ executable hello-hs
         aeson,
         miso-aeson,
         miso,
-    if arch(wasm32)
+    if os(wasi)
         ghc-options:
             -no-hs-main -optl-mexec-model=reactor
