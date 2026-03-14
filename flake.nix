@@ -38,6 +38,7 @@
                       ]
                     );
                 shell.nativeBuildInputs =
+                  [(
                   let
                     wasm-dummy-liblibdl = pkgs.runCommand "liblibdl"
                       {
@@ -48,8 +49,7 @@
                         echo 'void __liblibdl_stub(void) {}' | wasm32-unknown-wasi-cc -shared -x c - -o $out/lib/liblibdl.so 2>/dev/null
                       '';
                   in
-                  [
-                    (pkgs.writeShellScriptBin "wasm32-unknown-wasi-cabal" ''
+                    pkgs.writeShellScriptBin "wasm32-unknown-wasi-cabal" ''
                       LD_LIBRARY_PATH="${wasm-dummy-liblibdl}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
                       NIX_LDFLAGS=$(echo "$NIX_LDFLAGS" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
                       NIX_LDFLAGS_FOR_TARGET=$(echo "$NIX_LDFLAGS_FOR_TARGET" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
