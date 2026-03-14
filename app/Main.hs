@@ -39,7 +39,7 @@ main = do
     -- but the unmount action doesn't get run on reload
     -- and actually, given that it can't do IO directly, we'd need a new action as well...
     levelRef <- newIORef model.level
-    let a = startApp defaultEvents $ (app foreignStoreId levelRef model){styles = [Href ("assets/style.css#" <> cacheBuster) False]}
+    let a = startApp defaultEvents (app foreignStoreId levelRef model){styles = [Href ("assets/style.css#" <> cacheBuster) False]}
     getProgName >>= \case
         "<interactive>" -> reload a
         _ -> a
