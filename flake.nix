@@ -39,6 +39,7 @@
                     );
                 shell.nativeBuildInputs =
                   [
+                    pkgs.simple-http-server
                     (
                       let
                         wasm-dummy-liblibdl = pkgs.runCommand "liblibdl"
