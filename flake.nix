@@ -15,13 +15,13 @@
                 compiler-nix-name = "ghc9122";
                 evalSystem = "x86_64-linux";
                 crossPlatforms = p:
-                  pkgs.lib.optionals pkgs.stdenv.hostPlatform.isx86_64
+                  final.lib.optionals final.stdenv.hostPlatform.isx86_64
                     ([
                       p.ghcjs
                       p.wasi32
                       # TODO not currently available in caches, and takes a long time to build from source
                       # p.mingwW64
-                    ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux
+                    ] ++ final.lib.optionals final.stdenv.hostPlatform.isLinux
                       [
                         p.musl64
                         p.aarch64-multiplatform
