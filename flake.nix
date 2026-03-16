@@ -19,8 +19,6 @@
                     ([
                       p.ghcjs
                       p.wasi32
-                      # TODO not currently available in caches, and takes a long time to build from source
-                      # p.mingwW64
                     ] ++ final.lib.optionals final.stdenv.hostPlatform.isLinux
                       [
                         p.musl64
