@@ -17,7 +17,6 @@
                 crossPlatforms = p:
                   final.lib.optionals final.stdenv.hostPlatform.isx86_64
                     ([
-                      p.ghcjs
                       p.wasi32
                     ] ++ final.lib.optionals final.stdenv.hostPlatform.isLinux
                       [
