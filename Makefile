@@ -1,3 +1,5 @@
+PORT ?= 8000
+
 repl:
 	wasm32-unknown-wasi-cabal repl hello-hs
 
@@ -24,4 +26,4 @@ optim: build
 	wasm-tools strip -o dist/app.wasm dist/app.wasm
 
 serve: build
-	simple-http-server dist --index --nocache --open -t $(shell nproc) -p ${PORT}
+	simple-http-server dist --index --nocache --open -t $(shell nproc) -p $(PORT)
