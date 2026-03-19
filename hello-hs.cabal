@@ -9,6 +9,25 @@ executable hello-hs
     main-is: Main.hs
     hs-source-dirs: app
     default-language: GHC2021
+    default-extensions:
+        BlockArguments
+        DerivingStrategies
+        DerivingVia
+        DuplicateRecordFields
+        GADTs
+        LambdaCase
+        LexicalNegation
+        MultilineStrings
+        NamedFieldPuns
+        NegativeLiterals
+        NoFieldSelectors
+        NoMonomorphismRestriction
+        OrPatterns
+        OverloadedLabels
+        OverloadedRecordDot
+        PartialTypeSignatures
+        RecordWildCards
+        ViewPatterns
     ghc-options:
         -threaded
         -Wall
