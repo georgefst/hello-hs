@@ -65,13 +65,12 @@
                 shell.tools.cabal = "latest";
                 shell.tools.haskell-language-server = {
                   src = inputs.hls;
-                  cabalProjectLocal = ''
-                    source-repository-package
-                      type: git
-                      location: https://github.com/fourmolu/fourmolu.git
-                      tag: 34dc872445f993f80780f8b37f3a69f8278fe540
-                      --sha256: 0ljp9g0kq1skwdf1d8hisnwr8nmls03ailv5zb8mk6whdap6nala
-                  '';
+                  cabalProjectLocal = with pkgs.lib;
+                    concatStringsSep "\n"
+                      (builtins.filter (line: !(hasPrefix "import" line))
+                        (splitString "\n" (builtins.readFile "${inputs.hls}/cabal-ghc914.project"))
+                      ) + "  --sha256: 0ljp9g0kq1skwdf1d8hisnwr8nmls03ailv5zb8mk6whdap6nala"
+                  ;
                 };
                 shell.withHoogle = false;
                 shell.shellHook =
