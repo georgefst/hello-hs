@@ -1,0 +1,22 @@
+packages: .
+
+source-repository-package
+  type: git
+  location: https://github.com/dmjio/miso
+  tag: e5871007c474048e6ff68657249f0ed9073d774f
+  --sha256: k70wvAKqw0txmazfwB/FU8MvjjzyWcXX9n6VNDbUN+c=
+
+if arch(wasm32)
+  shared: True
+
+allow-newer:
+  *:base,
+  *:containers,
+  *:template-haskell,
+  *:text,
+  *:time,
+
+constraints:
+  containers installed,
+  text installed,
+  time installed,

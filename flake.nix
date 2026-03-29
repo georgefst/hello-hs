@@ -3,12 +3,26 @@
   inputs.haskell-nix.url = "github:input-output-hk/haskell.nix";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-2511";
   inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.hls-2-13 = { url = "github:haskell/haskell-language-server/2.13.0.0"; flake = false; };
+  inputs.hls = { url = "github:haskell/haskell-language-server/fourmolu-ghc-9.14"; flake = false; };
+  inputs.browser-wasi-shim = { url = "https://registry.npmjs.org/@bjorn3/browser_wasi_shim/-/browser_wasi_shim-0.3.0.tgz"; flake = false; };
+  inputs.ws = { url = "https://registry.npmjs.org/ws/-/ws-8.18.0.tgz"; flake = false; };
   outputs = inputs@{ self, nixpkgs, flake-utils, haskell-nix, ... }:
     flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-darwin" ] (system:
       let
         overlays = [
           haskell-nix.overlay
+          (final: prev: {
+            haskell-nix = prev.haskell-nix // {
+              compiler = prev.haskell-nix.compiler // {
+                ghc9141 = prev.haskell-nix.compiler.ghc9141.override {
+                  ghc-patches = prev.haskell-nix.compiler.ghc9141.patches ++
+                    (with final.lib; optionals final.stdenv.targetPlatform.isWasm (
+                      filter (hasSuffix ".patch") (filesystem.listFilesRecursive ./ghc-wasm-patches))
+                    );
+                };
+              };
+            };
+          })
           (final: prev: {
             myHaskellProject =
               final.haskell-nix.hix.project {
@@ -25,14 +39,53 @@
                         p.aarch64-multiplatform
                       ]
                     );
+                shell.nativeBuildInputs =
+                  [
+                    pkgs.simple-http-server
+                    (
+                      let
+                        wasm-dummy-liblibdl = pkgs.runCommand "liblibdl"
+                          {
+                            nativeBuildInputs = [ pkgs.pkgsCross.wasi32.buildPackages.llvmPackages.clang ];
+                          }
+                          ''
+                            mkdir -p $out/lib
+                            echo 'void __liblibdl_stub(void) {}' | wasm32-unknown-wasi-cc -shared -x c - -o $out/lib/liblibdl.so 2>/dev/null
+                          '';
+                      in
+                      pkgs.writeShellScriptBin "wasm32-unknown-wasi-cabal" ''
+                        LD_LIBRARY_PATH="${wasm-dummy-liblibdl}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
+                        NIX_LDFLAGS=$(echo "$NIX_LDFLAGS" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
+                        NIX_LDFLAGS_FOR_TARGET=$(echo "$NIX_LDFLAGS_FOR_TARGET" | tr ' ' '\n' | grep -v 'libffi-[0-9]' | tr '\n' ' ') \
+                        exec cabal \
+                          --with-ghc=wasm32-unknown-wasi-ghc \
+                          --with-compiler=wasm32-unknown-wasi-ghc \
+                          --with-ghc-pkg=wasm32-unknown-wasi-ghc-pkg \
+                          --with-hsc2hs=wasm32-unknown-wasi-hsc2hs \
+                          $(builtin type -P "wasm32-unknown-wasi-pkg-config" &> /dev/null && echo "--with-pkg-config=wasm32-unknown-wasi-pkg-config") \
+                          "$@"
+                      ''
+                    )
+                  ];
                 shell.tools.cabal = "latest";
                 shell.tools.haskell-language-server = {
-                  src = inputs.hls-2-13;
-                  sha256map = {
-                    "https://github.com/snowleopard/alga"."d4e43fb42db05413459fb2df493361d5a666588a" = "0s1mlnl64wj7pkg3iipv5bb4syy3bhxwqzqv93zqlvkyfn64015i";
-                  };
+                  src = inputs.hls;
+                  cabalProjectLocal = with pkgs.lib;
+                    concatStringsSep "\n"
+                      (builtins.filter (line: !(hasPrefix "import" line))
+                        (splitString "\n" (builtins.readFile "${inputs.hls}/cabal-ghc914.project"))
+                      ) + "  --sha256: 0ljp9g0kq1skwdf1d8hisnwr8nmls03ailv5zb8mk6whdap6nala"
+                  ;
                 };
                 shell.withHoogle = false;
+                shell.shellHook =
+                  let
+                    node_modules = pkgs.linkFarm "node_modules" [{ name = "ws"; path = inputs.ws; }];
+                  in
+                  ''
+                    export BROWSER_WASI_SHIM="${inputs.browser-wasi-shim}"
+                    export NODE_PATH="${node_modules}''${NODE_PATH:+:$NODE_PATH}"
+                  '';
               };
           })
         ];

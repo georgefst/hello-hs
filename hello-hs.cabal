@@ -27,7 +27,13 @@ executable hello-hs
         RecordWildCards
         ViewPatterns
     ghc-options:
-        -threaded
         -Wall
     build-depends:
         base >=4.14,
+        miso,
+    if os(wasi)
+        ghc-options:
+            -no-hs-main -optl-mexec-model=reactor
+    else
+        ghc-options:
+            -threaded
