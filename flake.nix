@@ -3,8 +3,8 @@
   inputs.haskell-nix.url = "github:input-output-hk/haskell.nix";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-2511";
   inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.hls-2-13 = {
-    url = "github:haskell/haskell-language-server/2.13.0.0";
+  inputs.hls-head = {
+    url = "github:haskell/haskell-language-server";
     flake = false;
   };
   outputs =
@@ -44,11 +44,7 @@
                   );
                 shell.tools.cabal = "latest";
                 shell.tools.haskell-language-server = {
-                  src = inputs.hls-2-13;
-                  sha256map = {
-                    "https://github.com/snowleopard/alga"."d4e43fb42db05413459fb2df493361d5a666588a" =
-                      "0s1mlnl64wj7pkg3iipv5bb4syy3bhxwqzqv93zqlvkyfn64015i";
-                  };
+                  src = inputs.hls-head;
                 };
                 shell.withHoogle = false;
               };
