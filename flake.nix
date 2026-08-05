@@ -18,7 +18,7 @@
     flake-utils.lib.eachSystem
       [
         "x86_64-linux"
-        "aarch64-darwin"
+        # "aarch64-darwin"
       ]
       (
         system:
@@ -34,11 +34,11 @@
                   p:
                   final.lib.optionals final.stdenv.hostPlatform.isx86_64 (
                     [
-                      p.wasi32
+                      # p.wasi32
                     ]
                     ++ final.lib.optionals final.stdenv.hostPlatform.isLinux [
-                      p.musl64
-                      p.aarch64-multiplatform
+                      # p.musl64
+                      # p.aarch64-multiplatform
                     ]
                   );
                 shell.tools.cabal = "latest";
