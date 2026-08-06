@@ -8,6 +8,13 @@ maintainer: georgefsthomas@gmail.com
 executable hello-hs
     main-is: Main.hs
     hs-source-dirs: app
+    other-modules:
+        ColouredOBJ
+        DiagramsGloss
+        DiagramsWaterfall
+        LondonHaskell
+        Undegenerate
+        WaterfallDice
     default-language: GHC2024
     default-extensions:
         BlockArguments
