@@ -42,11 +42,24 @@
                       # p.aarch64-multiplatform
                     ]
                   );
+                modules = [
+                  {
+                    packages.opencascade-hs.components.library = {
+                      libs = final.lib.mkForce [ final.opencascade-occt ];
+                      includeDirs = [ "${final.opencascade-occt}/include/opencascade" ];
+                      ghcOptions = [ "-Wwarn=redundant-constraints" ];
+                    };
+                  }
+                ];
                 shell.tools.cabal = "latest";
                 shell.tools.haskell-language-server = {
                   src = inputs.hls-head;
                 };
                 shell.withHoogle = false;
+                shell.nativeBuildInputs = [ final.f3d ];
+                shell.shellHook = ''
+                  export LD_LIBRARY_PATH="${final.lib.makeLibraryPath [ final.freeglut ]}:$LD_LIBRARY_PATH"
+                '';
               };
             })
           ];
