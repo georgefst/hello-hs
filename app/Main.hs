@@ -1,93 +1,66 @@
 {-# OPTIONS_GHC -Wno-missing-signatures #-}
+{-# OPTIONS_GHC -Wno-unused-imports #-}
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
 module Main (main) where
 
-import Linear (V3 (..), unit, _x)
-import Waterfall qualified as W
+import ColouredOBJ
+import Data.Tuple.Extra
+import Diagrams.Backend.SVG (renderSVG)
+import Diagrams.Prelude hiding (font)
+import Diagrams.TwoD.Offset
+import DiagramsGloss
+import DiagramsWaterfall
+import Graphics.Gloss qualified as Gloss
+import LondonHaskell
+import Waterfall qualified
+import WaterfallDice
 
--- rough measurements (mm)
-roomWidth = 2720
-roomHeight = 3070
-alcoveWidth = 600
-mattressWidth = 1370
-mattressLength = 1900
-mattressHeight = 200
-headBoardWidth = 70 -- also taken as the width of the padding at the end and sides of bed
-headBoardHeight = 700 -- how far the headboard rises above the main frame
-alcoveDepth = 250
-bedLegHeight = 120
-bedLegRadius = 35
-bedLegInset = 100
-bedMainFrameHeight = 250
-
--- roomDepth = 2660 -- not counting alcove
-
--- parameters we have some control over
-headroom = 1000
-alcoveWardrobeDepth = 600 -- this is a bit of a standard, and only the alcove part is this deep
-rightWardrobeWidth = alcoveWidth -- this is maybe implicitly assumed elsewhere
-
--- derived
-wardrobeHeight = roomHeight
-wardrobeCenterHeight = roomHeight - bedHeight + mattressHeight - headBoardHeight - headroom
-leftWardrobeWidth = roomWidth - bedWidth - rightWardrobeWidth
-bedHeight = mattressHeight + bedMainFrameHeight + bedLegHeight
-bedWidth = mattressWidth + headBoardWidth * 2
-bedLength = mattressLength + headBoardWidth * 2
-wardrobeDepth = alcoveWardrobeDepth - alcoveDepth
-
-bed =
-    frame
-        <> mattress
-  where
-    frame =
-        (base <> headboard <> legs)
-    base =
-        W.translate (V3 0 bedLegHeight 0) $
-            W.box (V3 bedWidth bedMainFrameHeight bedLength)
-    mattress =
-        W.translate (V3 headBoardWidth (bedMainFrameHeight + bedLegHeight) headBoardWidth) $
-            W.box (V3 mattressWidth mattressHeight mattressLength)
-    legs =
-        foldMap
-            (flip W.translate $ verticalCylinder bedLegRadius bedLegHeight)
-            [ V3 x 0 z
-            | x <- [bedLegInset, bedWidth - bedLegInset]
-            , z <- [bedLegInset, bedLength - bedLegInset]
-            ]
-    headboard =
-        W.translate
-            (V3 0 (bedLegHeight + bedMainFrameHeight) 0)
-            $ W.box
-            $ V3 bedWidth headBoardHeight headBoardWidth
-
-wardrobe =
-    W.translate
-        (V3 leftWardrobeWidth (roomHeight - wardrobeCenterHeight) 0)
-        top
-        <> left
-        <> W.translate
-            (V3 (roomWidth - rightWardrobeWidth) 0 -alcoveDepth)
-            right
-  where
-    top = W.box $ V3 bedWidth wardrobeCenterHeight wardrobeDepth
-    left = W.box $ V3 leftWardrobeWidth wardrobeHeight wardrobeDepth
-    right = W.box $ V3 rightWardrobeWidth wardrobeHeight alcoveWardrobeDepth
-
-fullSolid =
-    W.translate (V3 leftWardrobeWidth 0 0) bed
-        <> wardrobe
-
-main :: IO ()
 main = do
-    W.writeSTL 1 "out.stl" fullSolid
+    -- runGloss
+    renderSVG "out.svg" (mkSizeSpec $ V2 (Just 1000) Nothing) londonHaskellDiag
+    -- font <- Waterfall.fontFromSystem "P22 Johnston Underground" Waterfall.Regular 8 --TODO repeated from diagram
+    font <- Waterfall.fontFromPath "../london-haskell-logo/P22 Johnston Underground Regular.ttf" 8
+    -- P22 Johnston Underground Regular.ttf
+    let regions =
+            renderDia
+                Waterfall
+                WaterfallOptions{font}
+                londonHaskellDiag
+        -- to3D = Waterfall.sweep $ Waterfall.arcVia3D 0 (V3 0 0 1) (V3 0 1 0.5)
+        -- to3D = Waterfall.sweep $ Waterfall.fromPath2D $ Waterfall.line2D 0 (V2 4 10)
+        to3D = Waterfall.prism 5
+    -- Waterfall.writeSTL 0.01 "out.stl" dice
+    -- the whole thing as one solid, which is all an STL can hold
+    Waterfall.writeSTL 0.1 "out.stl" . to3D . mconcat $ fst <$> regions
+    -- and each region as its own coloured solid
+    writeColouredOBJ 0.1 "out.obj" $
+        zipWith
+            -- extrude upper layers so that overlapping regions don't fight over the same plane
+            -- this ensures the view from above matches the SVG
+            (\layer -> first $ Waterfall.translate (unit _z ^* (layer * 0.01)) . to3D)
+            -- (const id)
+            [0 ..]
+            regions
 
--- writeColouredOBJ
---     1
---     "out.obj"
---     [ (bed, opaque saddlebrown)
---     , (wardrobe, opaque navajowhite)
---     ]
+runGloss =
+    Gloss.animate (Gloss.InWindow "diagrams-gloss" (1000, 1000) (0, 0)) Gloss.white \(realToFrac -> t) ->
+        renderDia
+            Gloss
+            GlossOptions
+                { sizeSpec = mkSizeSpec $ V2 (Just 100) Nothing
+                , samples = 10
+                }
+            . rotateBy (t / 2)
+            $ londonHaskellDiag
 
--- utils
-verticalCylinder r h = W.scale (V3 r h r) $ W.rotate (unit _x) (-pi / 2) $ W.unitCylinder
+-- https://github.com/diagrams/diagrams-lib/issues/268
+-- mainTest = renderSVG "out.svg" (mkSizeSpec2D (Just 500) (Just 500)) $ t <> t' # showOrigin
+--   where
+--     x2 = r2 (1.0, 1.0) :: V2 Double -- endpoint
+--     -- this works well
+--     -- [c1, c2] = map r2 [(0.0, 1.0), (1.0, 0.0)]
+--     -- this doesn't (and is seemingly what OP meant)
+--     [c1,c2] = map r2 [(0.0, 0.0), (1.0, 0.0)]
+--     t = fromSegments [bézier3 c1 c2 x2]
+--     t' = (strokeLocTrail $ offsetTrail 0.5 t) # lc orange # lw thick
