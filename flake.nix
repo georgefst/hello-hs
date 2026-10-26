@@ -1,7 +1,7 @@
 {
   description = "Basic Haskell flake";
-  inputs.haskell-nix.url = "github:input-output-hk/haskell.nix";
-  inputs.nixpkgs.follows = "haskell-nix/nixpkgs-2511";
+  inputs.haskell-nix.url = "github:ican-group/haskell.nix";
+  inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.hls-head = {
     url = "github:haskell/haskell-language-server";
@@ -27,6 +27,7 @@
           overlays = [
             haskell-nix.overlay
             (final: prev: {
+              glut = final.freeglut; # TODO upstream this name change to Haskell.nix
               myHaskellProject = final.haskell-nix.hix.project {
                 src = ./.;
                 compiler-nix-name = "ghc9141";
@@ -56,7 +57,7 @@
                   src = inputs.hls-head;
                 };
                 shell.withHoogle = false;
-                shell.nativeBuildInputs = [ final.f3d ];
+                # shell.nativeBuildInputs = [ final.f3d ]; # TODO uncached for some reason
                 shell.shellHook = ''
                   export LD_LIBRARY_PATH="${final.lib.makeLibraryPath [ final.freeglut ]}:$LD_LIBRARY_PATH"
                 '';
@@ -70,4 +71,7 @@
         in
         pkgs.myHaskellProject.flake { }
       );
+  nixConfig = {
+    extra-substituters = [ "https://cache.zw3rk.com" ];
+  };
 }

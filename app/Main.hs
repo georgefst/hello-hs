@@ -9,9 +9,7 @@ import Data.Tuple.Extra
 import Diagrams.Backend.SVG (renderSVG)
 import Diagrams.Prelude hiding (font)
 import Diagrams.TwoD.Offset
-import DiagramsGloss
 import DiagramsWaterfall
-import Graphics.Gloss qualified as Gloss
 import LondonHaskell
 import Waterfall qualified
 import WaterfallDice
@@ -42,25 +40,3 @@ main = do
             -- (const id)
             [0 ..]
             regions
-
-runGloss =
-    Gloss.animate (Gloss.InWindow "diagrams-gloss" (1000, 1000) (0, 0)) Gloss.white \(realToFrac -> t) ->
-        renderDia
-            Gloss
-            GlossOptions
-                { sizeSpec = mkSizeSpec $ V2 (Just 100) Nothing
-                , samples = 10
-                }
-            . rotateBy (t / 2)
-            $ londonHaskellDiag
-
--- https://github.com/diagrams/diagrams-lib/issues/268
--- mainTest = renderSVG "out.svg" (mkSizeSpec2D (Just 500) (Just 500)) $ t <> t' # showOrigin
---   where
---     x2 = r2 (1.0, 1.0) :: V2 Double -- endpoint
---     -- this works well
---     -- [c1, c2] = map r2 [(0.0, 1.0), (1.0, 0.0)]
---     -- this doesn't (and is seemingly what OP meant)
---     [c1,c2] = map r2 [(0.0, 0.0), (1.0, 0.0)]
---     t = fromSegments [bézier3 c1 c2 x2]
---     t' = (strokeLocTrail $ offsetTrail 0.5 t) # lc orange # lw thick

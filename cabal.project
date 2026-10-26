@@ -1,5 +1,16 @@
 packages: .
 
+-- TODO not yet in Haskell.nix Hackage pin
+source-repository-package
+    type: git
+    location: https://github.com/joe-warren/opencascade-hs
+    tag: b5a7bbf2a093327f909b47346157f39421646e73
+    subdir: opencascade-hs waterfall-cad waterfall-cad-svg
+    --sha256: K+PmA96l/KRGAtfseeNcGH1NO2pypt1LACMwPcy7C7w=
+
+package opencascade-hs
+    ghc-options: -Wwarn=redundant-constraints
+
 allow-newer:
     *:base,
     *:template-haskell,

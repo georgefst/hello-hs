@@ -10,7 +10,6 @@ executable hello-hs
     hs-source-dirs: app
     other-modules:
         ColouredOBJ
-        DiagramsGloss
         DiagramsWaterfall
         LondonHaskell
         Undegenerate
@@ -47,7 +46,6 @@ executable hello-hs
         directory,
         extra,
         filepath,
-        gloss,
         lens,
         linear,
         opencascade-hs,
@@ -55,4 +53,4 @@ executable hello-hs
         svg-builder,
         text,
         waterfall-cad-svg,
-        waterfall-cad,
+        waterfall-cad >= 0.8,
