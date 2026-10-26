@@ -2,7 +2,6 @@
 
 module Main (main) where
 
-import Data.Monoid.Extra (getSum, mwhen)
 import Linear (V3 (..), unit, _x)
 import Waterfall qualified as W
 
@@ -27,12 +26,6 @@ bedMainFrameHeight = 250
 headroom = 1000
 alcoveWardrobeDepth = 600 -- this is a bit of a standard, and only the alcove part is this deep
 rightWardrobeWidth = alcoveWidth -- this is maybe implicitly assumed elsewhere
-cupboardBehind = True
-shelfGap = 100
-shelfCurveRadius = 400
-cupboardDepth = 100
-platformThickness = 30
-platformDepth = wardrobeDepth
 
 -- derived
 wardrobeHeight = roomHeight
@@ -76,34 +69,13 @@ wardrobe =
         <> W.translate
             (V3 (roomWidth - rightWardrobeWidth) 0 -alcoveDepth)
             right
-        <> cupboard
   where
     top = W.box $ V3 bedWidth wardrobeCenterHeight wardrobeDepth
     left = W.box $ V3 leftWardrobeWidth wardrobeHeight wardrobeDepth
     right = W.box $ V3 rightWardrobeWidth wardrobeHeight alcoveWardrobeDepth
-    cupboard =
-        mwhen cupboardBehind $
-            W.translate
-                (V3 leftWardrobeWidth 0 0)
-                ( body
-                    <> platform
-                )
-      where
-        body = W.box (V3 bedWidth bodyHeight cupboardDepth)
-        platform =
-            W.translate (V3 0 10 0) $
-                W.translate (V3 0 bodyHeight 0) $
-                    fullSlab
-                    --  `W.difference` (cornerCircle 0 <> cornerCircle bedWidth)
-          where
-            fullSlab = W.box (V3 bedWidth platformThickness platformDepth)
-            cornerCircle x =
-                W.translate (V3 x 0 platformDepth) $
-                    verticalCylinder shelfCurveRadius platformThickness
-        bodyHeight = bedHeight - mattressHeight + headBoardHeight + shelfGap
 
 fullSolid =
-    W.translate (V3 leftWardrobeWidth 0 (getSum $ mwhen cupboardBehind cupboardDepth)) bed
+    W.translate (V3 leftWardrobeWidth 0 0) bed
         <> wardrobe
 
 main :: IO ()
