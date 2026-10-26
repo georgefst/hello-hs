@@ -9,10 +9,8 @@ executable hello-hs
     main-is: Main.hs
     hs-source-dirs: app
     other-modules:
-        ColouredOBJ
         DiagramsWaterfall
         LondonHaskell
-        Undegenerate
         WaterfallDice
     default-language: GHC2024
     default-extensions:
